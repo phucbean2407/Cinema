@@ -1,11 +1,15 @@
 package fa.training.service.impl;
 
+import fa.training.config.AppConfig;
 import fa.training.dto.*;
-
 import fa.training.entity.*;
-
-import fa.training.repository.*;
-import fa.training.service.*;
+import fa.training.entity.login.User;
+import fa.training.repository.MovieShowTimeRepository;
+import fa.training.repository.PeopleRepository;
+import fa.training.repository.TicketRepository;
+import fa.training.service.SeatService;
+import fa.training.service.TheaterHallService;
+import fa.training.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +17,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
-
+    @Autowired
+    AppConfig appConfig;
     @Autowired
     SeatService seatService;
     @Autowired
@@ -91,41 +98,50 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public TicketDTO castEntityToDTO(Ticket ticket) {
         TicketDTO ticketDTO = new TicketDTO();
-//        ticketDTO.setId(ticket.getId());
-//        ticketDTO.setPaymentMethod(ticket.getPaymentMethod());
-//        ticketDTO.setPrice(ticket.getPrice());
-//        ticketDTO.setQuantity(ticket.getQuantity());
-//        ticketDTO.setTotalMoney(ticket.getTotalMoney());
-//        People people = peopleRepository.findByEmail(ticket.getPeople().getEmail());
-//        PeopleDTO peopleDTO = new PeopleDTO();
-//        peopleDTO.setName(people.getName());
-//        peopleDTO.setPhone(people.getPhone());
-//        peopleDTO.setAddress(people.getAddress());
-//        peopleDTO.setEmail(people.getEmail());
-//        peopleDTO.setBirthday(people.getBirthday());
-//        RoleDTO roleDTO = new RoleDTO();
-//        roleDTO.setName(people.getRole().getName());
-//        peopleDTO.setRoleDTO(roleDTO);
-//        ticketDTO.setPeople(peopleDTO);
-//        MovieShowTime movieShowTime = ticket.getMovieShowTime();
-//        MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
-//        movieShowTimeDTO.setDate(movieShowTime.getDate());
-//        movieShowTimeDTO.setTime(movieShowTime.getTime());
-//        Movie movie = movieShowTime.getMovie();
-//        MovieDTO movieDTO = new MovieDTO();
-//        CategoryDTO categoryDTO = new CategoryDTO();
-//        categoryDTO.setName(movie.getCategory().getName());
-//        movieDTO.setName(movie.getName());
-//        movieDTO.setDescription(movie.getDescription());
-//        movieDTO.setRating(movie.getRating());
-//        movieDTO.setLengthMinute(movie.getLengthMinute());
-//        movieDTO.setCategoryDTO(categoryDTO);
-//        movieShowTimeDTO.setMovieDTO(movieDTO);
-//        TheaterHall theaterHall = movieShowTime.getTheaterHall();
-//        TheaterHallDTO theaterHallDTO = new TheaterHallDTO();
-//        theaterHallDTO.setName(theaterHall.getName());
-//        movieShowTimeDTO.setTheaterHallDTO(theaterHallDTO);
-//        ticketDTO.setMovieShowTimeDTO(movieShowTimeDTO);
+        ticketDTO.setId(ticket.getId());
+        ticketDTO.setPaymentMethod(ticket.getPaymentMethod());
+        ticketDTO.setPrice(ticket.getPrice());
+        ticketDTO.setQuantity(ticket.getQuantity());
+        ticketDTO.setTotalMoney(ticket.getTotalMoney());
+        People people = peopleRepository.findByEmail(ticket.getPeople().getUser().getEmail());
+        PeopleDTO peopleDTO = new PeopleDTO();
+        peopleDTO.setName(people.getName());
+        peopleDTO.setPhone(people.getPhone());
+        peopleDTO.setAddress(people.getAddress());
+        peopleDTO.setBirthday(people.getBirthday());
+        User user = people.getUser();
+        UserDTO  userDTO = new UserDTO();
+        userDTO.setUsername(user.getUsername());
+        userDTO.setEmail(user.getEmail());
+        Set<Role> roles = user.getRoles();
+        Set<RoleDTO> roleDTO = roles.stream()
+                .map(role -> {
+                    RoleDTO roleDto = new RoleDTO();
+                    roleDto.setName(role.getName());
+                    return roleDto;
+                }).collect(Collectors.toSet());
+        userDTO.setRoleDTOs(roleDTO);
+        peopleDTO.setUserDTO(userDTO);
+        ticketDTO.setPeople(peopleDTO);
+        MovieShowTime movieShowTime = ticket.getMovieShowTime();
+        MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
+        movieShowTimeDTO.setDate(movieShowTime.getDate());
+        movieShowTimeDTO.setTime(movieShowTime.getTime());
+        Movie movie = movieShowTime.getMovie();
+        MovieDTO movieDTO = new MovieDTO();
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setName(movie.getCategory().getName());
+        movieDTO.setName(movie.getName());
+        movieDTO.setDescription(movie.getDescription());
+        movieDTO.setRating(movie.getRating());
+        movieDTO.setLengthMinute(movie.getLengthMinute());
+        movieDTO.setCategoryDTO(categoryDTO);
+        movieShowTimeDTO.setMovieDTO(movieDTO);
+        TheaterHall theaterHall = movieShowTime.getTheaterHall();
+        TheaterHallDTO theaterHallDTO = new TheaterHallDTO();
+        theaterHallDTO.setName(theaterHall.getName());
+        movieShowTimeDTO.setTheaterHallDTO(theaterHallDTO);
+        ticketDTO.setMovieShowTimeDTO(movieShowTimeDTO);
         return ticketDTO;
     }
 

@@ -7,7 +7,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.sql.Date;
-import java.util.List;
 
 @Data
 public class PeopleDTO {
@@ -25,6 +24,4 @@ public class PeopleDTO {
     private String phone;
     @NotNull
     private UserDTO userDTO;
-    private List<TicketDTO> ticketSetDTO;
-
 }

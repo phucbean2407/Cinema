@@ -1,16 +1,11 @@
 package fa.training.service.impl;
 
-import fa.training.config.AppConfig;
 import fa.training.dto.*;
 import fa.training.entity.*;
 import fa.training.entity.login.User;
-import fa.training.repository.MovieShowTimeRepository;
-import fa.training.repository.PeopleRepository;
-import fa.training.repository.TicketRepository;
-import fa.training.service.SeatService;
-import fa.training.service.TheaterHallService;
+import fa.training.repository.*;
 import fa.training.service.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
+import fa.training.service.utils.DateTimeUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,56 +17,42 @@ import java.util.stream.Collectors;
 
 @Service
 public class TicketServiceImpl implements TicketService {
-    @Autowired
-    AppConfig appConfig;
-    @Autowired
-    SeatService seatService;
-    @Autowired
-    TheaterHallService theaterHallService;
+    private final HallRepository hallRepository;
+    private final MovieRepository movieRepository;
+    private final TicketRepository ticketRepository;
+    private final MovieShowTimeRepository movieShowTimeRepository;
+    private final ShowTimeSeatRepository showTimeSeatRepository;
+    private final PeopleRepository peopleRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    TicketRepository ticketRepository;
-    @Autowired
-    MovieShowTimeRepository movieShowTimeRepository;
-    @Autowired
-    PeopleRepository peopleRepository;
-    //Xử lý giờ. Nếu giờ hiện tại < giờ chiếu thì phòng ready để đặt.
-    // Nếu giờ hiện tại == set phòng là full không cho đặt, đồng thời call method xóa hết ghế đã đặt tại thời điểm đó
+    public TicketServiceImpl(HallRepository hallRepository, MovieRepository movieRepository, TicketRepository ticketRepository, MovieShowTimeRepository movieShowTimeRepository, SeatRepository seatRepository, PeopleRepository peopleRepository, UserRepository userRepository, ShowTimeSeatRepository showTimeSeatRepository) {
+        this.hallRepository = hallRepository;
+        this.movieRepository = movieRepository;
+        this.ticketRepository = ticketRepository;
+        this.movieShowTimeRepository = movieShowTimeRepository;
+        this.peopleRepository = peopleRepository;
+        this.userRepository = userRepository;
+        this.showTimeSeatRepository = showTimeSeatRepository;
+    }
 
     @Override
-    public ResponseEntity<TicketDTO> addTicket(TicketDTO ticketDTO, List<SeatDTO> seatDTOS) {
-        Ticket ticket = this.castDTOToEntity(ticketDTO);
-        ticket.setQuantity(seatDTOS.size());
-        if(!theaterHallService.checkFull(ticket.getMovieShowTime().getTheaterHall().getName())){
+    public ResponseEntity<TicketDTO> addTicket(ChooseOrder chooseOrder) {
+        Ticket ticket = this.castDTOToEntity(chooseOrder.getTicketDTO());
+
             try {
-                seatService.editSeatList(seatDTOS);
                 ticketRepository.save(ticket);
+                for(String a : chooseOrder.getNumberSeat()) {
+                    showTimeSeatRepository.setSeatOrder(ticket.getMovieShowTime().getId(),a);
+                }
                 TicketDTO ticketDTO1 = this.castEntityToDTO(ticket);
                 return new ResponseEntity<>(ticketDTO1, HttpStatus.CREATED);
             } catch (Exception e) {
                 return new ResponseEntity(e.getMessage(),HttpStatus.OK);
             }
-        }
-        else{
-            return new ResponseEntity("Hall is full, Please choose another time",HttpStatus.OK);
-        }
+
 
     }
 
-
-    //Pass vé xem phim :))))
-    @Override
-    public ResponseEntity<TicketDTO> editTicket(TicketDTO ticketDTO, String peopleEmail) {
-        Ticket ticket = this.castDTOToEntity(ticketDTO);
-        ticket.setPeople(peopleRepository.findByEmail(peopleEmail));
-        try {
-            ticketRepository.saveAndFlush(ticket);
-            TicketDTO ticketDTO1 = this.castEntityToDTO(ticketRepository.findById(ticket.getId()).get());
-            return new ResponseEntity<>(ticketDTO1, HttpStatus.OK);
-        } catch (Exception e) {
-        return new ResponseEntity(e.getMessage(),HttpStatus.OK);
-        }
-    }
 
     @Override
     public ResponseEntity<List<TicketDTO>> findAll() {
@@ -81,19 +62,13 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public ResponseEntity<TicketDTO> findByCustomerEmail(String email) {
-        Ticket ticket =  ticketRepository.findTicketByEmailCustomer(email);
-        TicketDTO ticketDTO = this.castEntityToDTO(ticket);
-        return new ResponseEntity<>(ticketDTO,HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<List<TicketDTO>> findByHall(String hallName) {
-        List<Ticket> tickets = ticketRepository.findTicketByHallName(hallName);
+    public ResponseEntity<List<TicketDTO>> findByEmail(String email) {
+        List<Ticket> tickets =  ticketRepository.findTicketByEmail(email);
         List<TicketDTO> ticketDTOS = this.castListEntityToDTO(tickets);
         return new ResponseEntity<>(ticketDTOS,HttpStatus.OK);
-
     }
+
+
 
     @Override
     public TicketDTO castEntityToDTO(Ticket ticket) {
@@ -103,30 +78,30 @@ public class TicketServiceImpl implements TicketService {
         ticketDTO.setPrice(ticket.getPrice());
         ticketDTO.setQuantity(ticket.getQuantity());
         ticketDTO.setTotalMoney(ticket.getTotalMoney());
+        //Set PeopleDTO
         People people = peopleRepository.findByEmail(ticket.getPeople().getUser().getEmail());
         PeopleDTO peopleDTO = new PeopleDTO();
-        peopleDTO.setName(people.getName());
-        peopleDTO.setPhone(people.getPhone());
-        peopleDTO.setAddress(people.getAddress());
-        peopleDTO.setBirthday(people.getBirthday());
-        User user = people.getUser();
-        UserDTO  userDTO = new UserDTO();
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
-        Set<Role> roles = user.getRoles();
-        Set<RoleDTO> roleDTO = roles.stream()
+        User newUser =  people.getUser();
+        UserDTO userDTO = new UserDTO();
+        Set<RoleDTO> roleDTOS = newUser.getRoles().stream()
                 .map(role -> {
                     RoleDTO roleDto = new RoleDTO();
                     roleDto.setName(role.getName());
                     return roleDto;
                 }).collect(Collectors.toSet());
-        userDTO.setRoleDTOs(roleDTO);
+        userDTO.setRoleDTOs(roleDTOS);
+        userDTO.setUsername(newUser.getUsername());
+        userDTO.setEmail(newUser.getEmail());
         peopleDTO.setUserDTO(userDTO);
-        ticketDTO.setPeople(peopleDTO);
+        peopleDTO.setName(people.getName());
+        peopleDTO.setPhone(people.getPhone());
+        peopleDTO.setAddress(people.getAddress());
+        peopleDTO.setBirthday(people.getBirthday());
+        ticketDTO.setPeopleDTO(peopleDTO);
+        //Set MovieShowTime
         MovieShowTime movieShowTime = ticket.getMovieShowTime();
         MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
         movieShowTimeDTO.setDate(movieShowTime.getDate());
-        movieShowTimeDTO.setTime(movieShowTime.getTime());
         Movie movie = movieShowTime.getMovie();
         MovieDTO movieDTO = new MovieDTO();
         CategoryDTO categoryDTO = new CategoryDTO();
@@ -137,10 +112,21 @@ public class TicketServiceImpl implements TicketService {
         movieDTO.setLengthMinute(movie.getLengthMinute());
         movieDTO.setCategoryDTO(categoryDTO);
         movieShowTimeDTO.setMovieDTO(movieDTO);
-        TheaterHall theaterHall = movieShowTime.getTheaterHall();
-        TheaterHallDTO theaterHallDTO = new TheaterHallDTO();
-        theaterHallDTO.setName(theaterHall.getName());
-        movieShowTimeDTO.setTheaterHallDTO(theaterHallDTO);
+
+        Hall hall = movieShowTime.getHall();
+        HallDTO hallDTO = new HallDTO();
+        hallDTO.setName(hall.getName());
+        movieShowTimeDTO.setHallDTO(hallDTO);
+
+        movieShowTimeDTO.setTime(movieShowTime.getTime());
+        Set<SeatDTO>  seatDTOS = movieShowTime.getSeats().stream()
+                .map(seat -> {
+                    SeatDTO seatDTO = new SeatDTO();
+                    seatDTO.setName(seat.getName());
+                    return seatDTO;
+                }).collect(Collectors.toSet());
+        movieShowTimeDTO.setSeatDTOS(seatDTOS);
+
         ticketDTO.setMovieShowTimeDTO(movieShowTimeDTO);
         return ticketDTO;
     }
@@ -158,17 +144,36 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public Ticket castDTOToEntity(TicketDTO ticketDTO) {
         Ticket ticket = new Ticket();
-        if(ticketRepository.findById(ticketDTO.getId()).get() !=null) {
-            ticket = ticketRepository.findById(ticketDTO.getId()).get();
-        }
-        MovieShowTime movieShowTime = movieShowTimeRepository.findForTicket(ticketDTO.getMovieShowTimeDTO().getDate(),
-                ticketDTO.getMovieShowTimeDTO().getMovieDTO().getName(),
-                ticketDTO.getMovieShowTimeDTO().getTheaterHallDTO().getName(),
-                ticketDTO.getMovieShowTimeDTO().getTime().getTime());
+        String date = DateTimeUtils.fromDateToString(ticketDTO.getMovieShowTimeDTO().getDate());
+        String movieName = ticketDTO.getMovieShowTimeDTO().getMovieDTO().getName();
+        String hallName =  ticketDTO.getMovieShowTimeDTO().getHallDTO().getName();
+        long timeId = ticketDTO.getMovieShowTimeDTO().getTime().getId();
+        Time time = ticketDTO.getMovieShowTimeDTO().getTime();
+        MovieShowTime movieShowTime = movieShowTimeRepository
+                .findForTicket(date,
+                        movieName,
+                        hallName,
+                        timeId);
+        movieShowTime.setTime(time);
+        movieShowTime.setDate(ticketDTO.getMovieShowTimeDTO().getDate());
+        Movie movie = movieRepository.findByName(movieName);
+        movieShowTime.setMovie(movie);
+        Hall hall = hallRepository.findByName(hallName);
+        movieShowTime.setHall(hall);
+        ticket.setMovieShowTime(movieShowTime);
+        ticket.setPaymentMethod(ticketDTO.getPaymentMethod());
+        ticket.setPrice(ticketDTO.getPrice());
         ticket.setQuantity(ticketDTO.getQuantity());
         ticket.setTotalMoney(ticketDTO.getPrice()*ticketDTO.getQuantity());
-        ticket.setMovieShowTime(movieShowTime);
-        ticket.setPeople(peopleRepository.findByEmail(ticketDTO.getPeople().getUserDTO().getEmail()));
+        PeopleDTO peopleDTO = ticketDTO.getPeopleDTO();
+        People people = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail());
+        people.setBirthday(peopleDTO.getBirthday());
+        people.setName(peopleDTO.getName());
+        people.setAddress(peopleDTO.getAddress());
+        people.setName(peopleDTO.getName());
+        people.setTicketSet(null);
+        people.setPhone(peopleDTO.getPhone());
+        ticket.setPeople(people);
         return ticket;
     }
 }

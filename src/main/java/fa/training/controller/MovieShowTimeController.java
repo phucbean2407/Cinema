@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -19,8 +20,8 @@ public class MovieShowTimeController {
     private MovieShowTimeService movieShowTimeService;
 
 
-    @PostMapping("/add_movie_show_time)")
-    public ResponseEntity<MovieShowTimeDTO> addMovieShowTime(@Valid @RequestBody MovieShowTimeDTO movieShowTimeDTO){
+    @PostMapping("/add_movie_show_time")
+    public ResponseEntity<MovieShowTimeDTO> addMovieShowTime(@Valid @RequestBody MovieShowTimeDTO movieShowTimeDTO) throws ParseException {
         return movieShowTimeService.addMovieShowTime(movieShowTimeDTO);
     }
 

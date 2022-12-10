@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "CheckInit", columnNames = { "name","theather_hall_id","time_id"}))
+@Table()
 @Data
 public class Seat implements Serializable {
     @Id
@@ -18,16 +18,4 @@ public class Seat implements Serializable {
     @Column(unique = true)
     @NotNull
     private String name;
-
-    @Column(columnDefinition = "boolean DEFAULT FALSE")
-    @NotNull
-    private boolean isActive;
-    @ManyToOne
-    @JoinColumn(name = "theather_hall_id")
-    private TheaterHall theaterHall;
-
-    @ManyToOne
-    @JoinColumn(name = "time_id")
-    private Time time;
-
 }

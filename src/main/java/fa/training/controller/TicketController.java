@@ -1,7 +1,7 @@
 package fa.training.controller;
 
 
-import fa.training.dto.SeatDTO;
+import fa.training.dto.ChooseOrder;
 import fa.training.dto.TicketDTO;
 import fa.training.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,8 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping("/add_ticket")
-    public ResponseEntity<TicketDTO> addTicket(@RequestBody @Valid TicketDTO ticketDTO, @RequestBody List<SeatDTO> seatDTOS ) throws NullPointerException{
-        return ticketService.addTicket(ticketDTO,seatDTOS);
-    }
-
-
-    @PostMapping("/edit_ticket")
-    public ResponseEntity<TicketDTO> editTicket(@RequestBody TicketDTO ticketDTO, @RequestParam("peopleEmail") String email) throws NullPointerException{
-        return ticketService.editTicket(ticketDTO, email);
+    public ResponseEntity<TicketDTO> addTicket(@RequestBody @Valid ChooseOrder chooseOrder) {
+        return ticketService.addTicket(chooseOrder);
     }
 
     @GetMapping("/tickets")
@@ -33,14 +27,9 @@ public class TicketController {
         return ticketService.findAll();
     }
 
-    @GetMapping("/get_ticket_for_customer")
-    public ResponseEntity<TicketDTO> findByCustomerEmail(@RequestParam("customerEmail") String email){
-        return ticketService.findByCustomerEmail(email);
-    }
-
-    @GetMapping("/get_ticket_by_hall")
-    public ResponseEntity<List<TicketDTO>> findByHall(@RequestParam("hallName") String name){
-        return ticketService.findByHall(name);
+    @GetMapping("/get-ticket-by-email")
+    public ResponseEntity<List<TicketDTO>> findByEmail(@RequestParam("customerEmail") String email){
+        return ticketService.findByEmail(email);
     }
 
 

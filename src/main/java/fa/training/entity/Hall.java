@@ -14,7 +14,7 @@ import java.util.Set;
 @Table
 @Data
 
-public class TheaterHall implements Serializable {
+public class Hall implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -23,16 +23,7 @@ public class TheaterHall implements Serializable {
     @NotNull
     private String name;
 
-    @Column(columnDefinition = "boolean DEFAULT FALSE")
-    @NotNull
-    private boolean isFull;
-
-
-    @OneToMany(mappedBy ="theaterHall", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Seat> seat;
-
-    @OneToMany(mappedBy ="theaterHall", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<MovieShowTime> movieShowTimes;
 

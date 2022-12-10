@@ -1,11 +1,11 @@
 package fa.training.service.impl;
 
-;
 import fa.training.dto.MovieShowTimeDTO;
+import fa.training.dto.SeatDTO;
 import fa.training.entity.MovieShowTime;
-import fa.training.entity.TheaterHall;
 import fa.training.repository.*;
 import fa.training.service.*;
+import fa.training.service.utils.DateTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,37 +13,36 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+;
 
 @Service
 public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
     @Autowired
-    MovieShowTimeRepository movieShowTimeRepository;
+    private MovieShowTimeRepository movieShowTimeRepository;
     @Autowired
-    TheaterHallRepository theaterHallRepository;
+    private HallRepository hallRepository;
+
     @Autowired
-    SeatRepository seatRepository;
+    private MovieService movieService;
     @Autowired
-    SeatService seatService;
+    private MovieRepository movieRepository;
     @Autowired
-    MovieService movieService;
+    private CategoryService categoryService;
     @Autowired
-    MovieRepository movieRepository;
-    @Autowired
-    CategoryService categoryService;
-    @Autowired
-    TheaterHallService theaterHallService;
-    @Autowired
-    TimeRepository timeRepository;
+    private HallService hallService;
+
     @Override
     public ResponseEntity<MovieShowTimeDTO> addMovieShowTime(MovieShowTimeDTO movieShowTimeDTO) {
         MovieShowTime movieShowTime = this.castDTOToEntity(movieShowTimeDTO);
-        TheaterHall theaterHall = movieShowTime.getTheaterHall();
-        theaterHallService.setHallReady(theaterHall.getName());
         try{
-            theaterHallRepository.saveAndFlush(theaterHall);
             movieShowTimeRepository.save(movieShowTime);
-            MovieShowTimeDTO movieShowTimeDto = this.castEntityToDTO(movieShowTimeRepository.findForTicket(movieShowTimeDTO.getDate(),movieShowTimeDTO.getMovieDTO().getName(),
-                    movieShowTimeDTO.getTheaterHallDTO().getName(),movieShowTimeDTO.getTime().getTime()));
+            MovieShowTime movieShowTime1 =movieShowTimeRepository.
+                    findForTicket(DateTimeUtils.fromDateToString(movieShowTimeDTO.getDate()),movieShowTimeDTO.getMovieDTO().getName(),
+                    movieShowTimeDTO.getHallDTO().getName(),movieShowTimeDTO.getTime().getId());
+            MovieShowTimeDTO movieShowTimeDto = this.castEntityToDTO(movieShowTime1);
             return new ResponseEntity<>(movieShowTimeDto, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity(e.getMessage(), HttpStatus.OK);
@@ -70,9 +69,16 @@ public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
     public MovieShowTimeDTO castEntityToDTO(MovieShowTime movieShowTime) {
         MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
         movieShowTimeDTO.setDate(movieShowTime.getDate());
-        movieShowTimeDTO.setTime(movieShowTime.getTime());
         movieShowTimeDTO.setMovieDTO(movieService.castEntityToDTO(movieRepository.findByName(movieShowTime.getMovie().getName())));
-        movieShowTimeDTO.setTheaterHallDTO(theaterHallService.findByName(movieShowTime.getTheaterHall().getName()).getBody());
+        movieShowTimeDTO.setHallDTO(hallService.findByName(movieShowTime.getHall().getName()).getBody());
+        movieShowTimeDTO.setTime(movieShowTime.getTime());
+        Set<SeatDTO>  seatDTOS = movieShowTime.getSeats().stream()
+                .map(seat -> {
+                    SeatDTO seatDTO = new SeatDTO();
+                    seatDTO.setName(seat.getName());
+                    return seatDTO;
+                }).collect(Collectors.toSet());
+        movieShowTimeDTO.setSeatDTOS(seatDTOS);
         return movieShowTimeDTO;
     }
 
@@ -89,15 +95,10 @@ public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
     @Override
     public MovieShowTime castDTOToEntity(MovieShowTimeDTO movieShowTimeDTO) {
         MovieShowTime movieShowTime = new MovieShowTime();
-        if(movieShowTimeRepository.findForTicket(movieShowTimeDTO.getDate(),movieShowTimeDTO.getMovieDTO().getName(),
-                movieShowTimeDTO.getTheaterHallDTO().getName(),movieShowTimeDTO.getTime().getTime()) !=null) {
-            movieShowTime = movieShowTimeRepository.findForTicket(movieShowTimeDTO.getDate(),movieShowTimeDTO.getMovieDTO().getName(),
-                    movieShowTimeDTO.getTheaterHallDTO().getName(),movieShowTimeDTO.getTime().getTime());
-        }
         movieShowTime.setDate(movieShowTimeDTO.getDate());
-        movieShowTime.setTime(timeRepository.findById(movieShowTimeDTO.getTime().getId()).get());
+        movieShowTime.setTime(movieShowTimeDTO.getTime());
         movieShowTime.setMovie(movieRepository.findByName(movieShowTimeDTO.getMovieDTO().getName()));
-        movieShowTime.setTheaterHall(theaterHallRepository.findByName(movieShowTimeDTO.getTheaterHallDTO().getName()));
+        movieShowTime.setHall(hallRepository.findByName(movieShowTimeDTO.getHallDTO().getName()));
         return movieShowTime;
     }
 }

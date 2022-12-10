@@ -4,13 +4,11 @@ package fa.training.service.impl;
 import fa.training.dto.PeopleDTO;
 import fa.training.dto.RoleDTO;
 import fa.training.dto.UserDTO;
-import fa.training.config.AppConfig;
-import fa.training.entity.login.User;
 import fa.training.entity.People;
+import fa.training.entity.login.User;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.UserRepository;
 import fa.training.service.PeopleService;
-import fa.training.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,10 +25,7 @@ public class PeopleServiceImpl implements PeopleService {
     private PeopleRepository peopleRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private AppConfig appConfig;
-    @Autowired
-    RoleService roleService;
+
 
 
     @Override
@@ -76,22 +72,22 @@ public class PeopleServiceImpl implements PeopleService {
     }
 
     @Override
-    public ResponseEntity<List<PeopleDTO>> getAllStaff() {
-        List<People> people = peopleRepository.findByRole(2L);
+    public ResponseEntity<List<PeopleDTO>> getAdmins() {
+        List<People> people = peopleRepository.findByRole("ROLE_ADMIN");
         List<PeopleDTO> peopleDTOS= this.castListEntityToDTO(people);
         return new ResponseEntity<>(peopleDTOS,HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<PeopleDTO>> getAllCustomer() {
-        List<People> people =  peopleRepository.findByRole(3L);
+        List<People> people =  peopleRepository.findByRole("ROLE_USER");
         List<PeopleDTO> peopleDTOS= this.castListEntityToDTO(people);
         return new ResponseEntity<>(peopleDTOS,HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<List<PeopleDTO>> getCustomerBirthDay(String birthday) {
-        List<People> people = peopleRepository.findByRoleAndBirthday(3L,birthday);
+        List<People> people = peopleRepository.findByRoleAndBirthday("ROLE_USER",birthday);
         List<PeopleDTO> peopleDTOS= this.castListEntityToDTO(people);
         return new ResponseEntity<>(peopleDTOS,HttpStatus.OK);
     }
@@ -101,10 +97,13 @@ public class PeopleServiceImpl implements PeopleService {
             PeopleDTO peopleDTO = new PeopleDTO();
             User newUser = userRepository.findByUsername(people.getUser().getUsername()).get();
             UserDTO userDTO = new UserDTO();
-            userDTO.setRoleDTOs(newUser.getRoles()
-                .stream()
-                .map(role -> appConfig.modelMapper().map(role, RoleDTO.class))
-                .collect(Collectors.toSet()));
+            Set<RoleDTO> roleDTOS = newUser.getRoles().stream()
+                .map(role -> {
+                    RoleDTO roleDto = new RoleDTO();
+                    roleDto.setName(role.getName());
+                    return roleDto;
+                }).collect(Collectors.toSet());
+            userDTO.setRoleDTOs(roleDTOS);
             userDTO.setUsername(newUser.getUsername());
             userDTO.setEmail(newUser.getEmail());
             peopleDTO.setUserDTO(userDTO);

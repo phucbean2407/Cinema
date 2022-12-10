@@ -12,7 +12,7 @@ public interface PeopleService {
     ResponseEntity<Boolean> deletePeople(String peopleEmail);
     ResponseEntity<PeopleDTO> editPeople(PeopleDTO peopleDTO);
     ResponseEntity<PeopleDTO> findByEmail(String peopleEmail);
-    ResponseEntity<List<PeopleDTO>> getAllStaff();
+    ResponseEntity<List<PeopleDTO>> getAdmins();
     ResponseEntity<List<PeopleDTO>> getAllCustomer();
     ResponseEntity<List<PeopleDTO>> getCustomerBirthDay(String birthDay);
 

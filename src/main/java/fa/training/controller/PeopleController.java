@@ -36,9 +36,14 @@ public class PeopleController {
         return peopleService.editPeople(peopleDTO);
     }
     @GetMapping("/get_person")
-    public ResponseEntity<PeopleDTO> getCustomer(@RequestParam(name = "email") String email){
+    public ResponseEntity<PeopleDTO> getPerson(@RequestParam(name = "email") String email){
         return peopleService.findByEmail(email);
     }
+    @GetMapping("/get_admin")
+    public ResponseEntity<List<PeopleDTO>> getAdmin(){
+        return peopleService.getAdmins();
+    }
+
     @GetMapping("/get_birthday")
     public ResponseEntity<List<PeopleDTO>> getPersonBirthday(@RequestParam(name = "birthDay") String birthDay){
         return peopleService.getCustomerBirthDay(birthDay);

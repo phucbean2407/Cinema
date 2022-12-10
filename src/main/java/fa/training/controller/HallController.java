@@ -2,9 +2,9 @@ package fa.training.controller;
 
 
 
-import fa.training.dto.TheaterHallDTO;
+import fa.training.dto.HallDTO;
 
-import fa.training.service.TheaterHallService;
+import fa.training.service.HallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,17 +15,17 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class TheaterHallController {
+public class HallController {
     @Autowired
-    TheaterHallService hallService;
+    HallService hallService;
 
     @PostMapping("/edit_hall")
-    public ResponseEntity<TheaterHallDTO> editHall(@Valid @RequestBody TheaterHallDTO hallDTO){
+    public ResponseEntity<HallDTO> editHall(@Valid @RequestBody HallDTO hallDTO){
         return hallService.editTheaterHall(hallDTO);
     }
 
     @GetMapping("/find_hall_by_name")
-    public ResponseEntity<TheaterHallDTO> getName(@RequestParam("name") String name){
+    public ResponseEntity<HallDTO> getName(@RequestParam("name") String name){
         return hallService.findByName(name);
     }
 }

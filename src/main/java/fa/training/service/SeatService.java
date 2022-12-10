@@ -11,12 +11,9 @@ import java.util.List;
 public interface SeatService {
     //Seat không thêm, không xóa.
     ResponseEntity<List<SeatDTO>> getAll();
-    ResponseEntity<SeatDTO> editSeat(SeatDTO seat);
+    ResponseEntity<SeatDTO> editSeat(SeatDTO seat, String userName);
 
-    ResponseEntity<List<SeatDTO>> editSeatList(List<SeatDTO> seat);
-    ResponseEntity<List<SeatDTO>> findSeatFromHall(String name);
-
-    ResponseEntity<List<SeatDTO>> findFreeSeatFromHall(String name);
+    ResponseEntity<List<SeatDTO>> editSeatList(List<SeatDTO> seat,String username);
 
 
     SeatDTO castEntityToDTO(Seat seat);

@@ -3,13 +3,11 @@ package fa.training.dto;
 
 import lombok.Data;
 
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 @Data
 public class TicketDTO {
-    @NotNull
     private long id;
     @NotNull
     private String paymentMethod;
@@ -22,6 +20,7 @@ public class TicketDTO {
     @Positive
     private double totalMoney;
 
-    private PeopleDTO people;
+    private PeopleDTO peopleDTO;
+
     private MovieShowTimeDTO movieShowTimeDTO;
 }

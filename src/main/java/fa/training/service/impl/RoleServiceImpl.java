@@ -1,7 +1,6 @@
 package fa.training.service.impl;
 
 import fa.training.dto.RoleDTO;
-import fa.training.config.AppConfig;
 import fa.training.entity.Role;
 import fa.training.repository.RoleRepository;
 import fa.training.service.RoleService;
@@ -13,9 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RoleServiceImpl implements RoleService {
     @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    AppConfig appConfig;
+    private RoleRepository roleRepository;
 
     @Override
     public ResponseEntity<RoleDTO> findByID(long id) {

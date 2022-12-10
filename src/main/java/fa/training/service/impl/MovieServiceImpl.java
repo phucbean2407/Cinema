@@ -19,9 +19,9 @@ import java.util.List;
 @Service
 public class MovieServiceImpl implements MovieService {
     @Autowired
-    MovieRepository movieRepository;
+    private MovieRepository movieRepository;
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Override
     public ResponseEntity<MovieDTO> addMovie(MovieDTO movieDTO) {

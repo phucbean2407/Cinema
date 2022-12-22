@@ -44,6 +44,7 @@ public class MovieShowTime implements Serializable  {
     private Hall hall;
 
     @OneToMany(mappedBy = "movieShowTime", cascade = CascadeType.ALL)
+    @Transient
     @JsonIgnore
     private Set<Ticket> ticket;
 

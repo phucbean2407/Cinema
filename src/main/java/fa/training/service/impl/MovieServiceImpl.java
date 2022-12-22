@@ -3,7 +3,6 @@ package fa.training.service.impl;
 
 import fa.training.dto.CategoryDTO;
 import fa.training.dto.MovieDTO;
-
 import fa.training.entity.Category;
 import fa.training.entity.Movie;
 import fa.training.repository.CategoryRepository;
@@ -16,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 @Service
 public class MovieServiceImpl implements MovieService {
     @Autowired
@@ -25,7 +26,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public ResponseEntity<MovieDTO> addMovie(MovieDTO movieDTO) {
-        Movie movie = this.castDTOToEntity(movieDTO);
+        Movie movie = castDTOToEntity(movieDTO);
         try {
             movieRepository.save(movie);
             return new ResponseEntity<>(movieDTO,HttpStatus.CREATED);
@@ -39,7 +40,7 @@ public class MovieServiceImpl implements MovieService {
     public ResponseEntity<List<MovieDTO>> addMovieFromList(List<MovieDTO> movieDTOS) {
         try {
             for(MovieDTO movieDTO : movieDTOS){
-                Movie movie = this.castDTOToEntity(movieDTO);
+                Movie movie = castDTOToEntity(movieDTO);
                 movieRepository.save(movie);
             }
             return new ResponseEntity<>(movieDTOS,HttpStatus.CREATED);
@@ -74,7 +75,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public ResponseEntity<List<MovieDTO>> findAllFMovies() {
         List<Movie> movies = movieRepository.findAll();
-        List<MovieDTO> movieDTOS = this.castListEntityToDTO(movies);
+        List<MovieDTO> movieDTOS = castListEntityToDTO(movies);
         return new ResponseEntity<>(movieDTOS, HttpStatus.OK);
     }
     @Override
@@ -93,7 +94,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public ResponseEntity<List<MovieDTO>> findByCategory(String categoryName) {
-        Category category = categoryRepository.findByName(categoryName);
+        Category category = categoryRepository.findByName(categoryName).orElseThrow(() -> new RuntimeException(""));
         List<Movie> movies = movieRepository.findByCategory(category);
         List<MovieDTO> movieDTOS = this.castListEntityToDTO(movies);
         return new ResponseEntity<>(movieDTOS, HttpStatus.OK);
@@ -117,7 +118,7 @@ public class MovieServiceImpl implements MovieService {
     public List<MovieDTO> castListEntityToDTO(List<Movie> movies) {
         List<MovieDTO> movieDTOS = new ArrayList<>();
         for (Movie movie : movies) {
-            MovieDTO movieDTO = this.castEntityToDTO(movie);
+            MovieDTO movieDTO = castEntityToDTO(movie);
             movieDTOS.add(movieDTO);
         }
         return movieDTOS;
@@ -126,14 +127,13 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public Movie castDTOToEntity(MovieDTO movieDTO) {
         Movie movie = new Movie();
-        if(movieRepository.findByName(movieDTO.getName()) != null) {
-            movie = movieRepository.findByName(movieDTO.getName());
-        }
         movie.setName(movieDTO.getName());
         movie.setDescription(movieDTO.getDescription());
         movie.setRating(movieDTO.getRating());
         movie.setLengthMinute(movieDTO.getLengthMinute());
-        movie.setCategory(categoryRepository.findByName(movieDTO.getName()));
+        Category category = categoryRepository.findByName(movieDTO.getCategoryDTO().getName())
+                .orElseThrow(() -> new NoSuchElementException("Not found Category."));
+        movie.setCategory(category);
         return movie;
     }
 }

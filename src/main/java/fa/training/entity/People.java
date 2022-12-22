@@ -41,6 +41,7 @@ public class People implements Serializable {
     private User user;
 
     @OneToMany(mappedBy = "people", cascade = CascadeType.ALL)
+    @Transient
     @JsonIgnore
     private Set<Ticket> ticketSet;
 

@@ -3,7 +3,6 @@ package fa.training.service.impl;
 
 import fa.training.dto.CategoryDTO;
 import fa.training.entity.Category;
-
 import fa.training.repository.CategoryRepository;
 import fa.training.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-
+import org.hibernate.exception.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -24,6 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
         //Convert DTO to Entity
         Category category = this.castDTOToEntity(categoryDTO);
         try{
+            //verify
             categoryRepository.save(category);
             return new ResponseEntity<>(categoryDTO,HttpStatus.CREATED);
         } catch (Exception ex){
@@ -39,7 +40,9 @@ public class CategoryServiceImpl implements CategoryService {
                 categoryRepository.save(category);
             }
             return new ResponseEntity<>(categoryDTOs,HttpStatus.CREATED);
-        } catch (Exception ex){
+        } catch (ConstraintViolationException ex){
+            return new ResponseEntity("Category exists",HttpStatus.OK);
+        } catch (Exception ex) {
             return new ResponseEntity(ex.getMessage(),HttpStatus.OK);
         }
     }
@@ -75,7 +78,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public ResponseEntity<CategoryDTO> findByName(String name) {
-        return new ResponseEntity<>(this.castEntityToDTO(categoryRepository.findByName(name)),
+        Category category = categoryRepository.findByName(name)
+                .orElseThrow(() -> new NoSuchElementException("NOT FOUND"));
+        CategoryDTO categoryDTO = castEntityToDTO(category);
+        return new ResponseEntity<>(categoryDTO,
                 HttpStatus.OK);
     }
 
@@ -99,9 +105,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category castDTOToEntity(CategoryDTO categoryDTO) {
         Category category = new Category();
-        if(categoryRepository.findByName(categoryDTO.getName()) != null) {
-             category = categoryRepository.findByName(categoryDTO.getName());
-        }
         category.setName(categoryDTO.getName());
         return category;
     }

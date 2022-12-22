@@ -1,15 +1,14 @@
 package fa.training.entity;
 
 
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.io.Serializable;
 import java.util.Set;
-import javax.validation.constraints.*;
 
 @Entity
 @Table
@@ -38,6 +37,7 @@ public class Movie implements Serializable {
     private Category category;
 
     @OneToMany(mappedBy ="movie", cascade = CascadeType.ALL)
+    @Transient
     @JsonIgnore
     private Set<MovieShowTime> movieShowTimes;
 

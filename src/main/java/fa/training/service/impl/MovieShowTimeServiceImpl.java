@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,7 +42,8 @@ public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
             movieShowTimeRepository.save(movieShowTime);
             MovieShowTime movieShowTime1 =movieShowTimeRepository.
                     findForTicket(DateTimeUtils.fromDateToString(movieShowTimeDTO.getDate()),movieShowTimeDTO.getMovieDTO().getName(),
-                    movieShowTimeDTO.getHallDTO().getName(),movieShowTimeDTO.getTime().getId());
+                    movieShowTimeDTO.getHallDTO().getName(),movieShowTimeDTO.getTime().getId())
+                    .orElseThrow(() -> new NoSuchElementException("NOT FOUND"));
             MovieShowTimeDTO movieShowTimeDto = this.castEntityToDTO(movieShowTime1);
             return new ResponseEntity<>(movieShowTimeDto, HttpStatus.OK);
         } catch (Exception e) {

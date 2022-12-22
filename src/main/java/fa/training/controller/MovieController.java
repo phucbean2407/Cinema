@@ -1,7 +1,6 @@
 package fa.training.controller;
 
 
-
 import fa.training.dto.MovieDTO;
 import fa.training.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
-
 
     @PostMapping("/add_movie")
     public ResponseEntity<MovieDTO> addMovie(@Valid @RequestBody MovieDTO movieDTO)throws NullPointerException{
@@ -50,8 +48,14 @@ public class MovieController {
     public ResponseEntity<List<MovieDTO>> getMovie(@RequestParam("name") String name)throws NullPointerException{
        return movieService.findNeededMovies(name);
     }
+    @GetMapping("/get-movie-by-category")
+    public ResponseEntity<List<MovieDTO>> getMovieByCategory(@RequestParam("name") String categoryName)throws NullPointerException{
+        return movieService.findByCategory(categoryName);
+    }
+
     @GetMapping("/movies")
     public ResponseEntity<List<MovieDTO>> getAllMovies(){
         return movieService.findAllFMovies();
     }
+
 }

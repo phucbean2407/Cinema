@@ -24,6 +24,7 @@ public class Time implements Serializable {
 
 
     @OneToMany(mappedBy = "time", cascade = CascadeType.ALL)
+    @Transient
     @JsonIgnore
     private Set<MovieShowTime> movieShowTimes;
 

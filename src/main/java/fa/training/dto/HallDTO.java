@@ -1,10 +1,14 @@
 package fa.training.dto;
 
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-@Data
+@Builder
+@Getter
+@Setter
 public class HallDTO {
 
     @NotNull

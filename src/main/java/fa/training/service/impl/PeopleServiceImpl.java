@@ -9,7 +9,6 @@ import fa.training.entity.login.User;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.UserRepository;
 import fa.training.service.PeopleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,11 +20,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class PeopleServiceImpl implements PeopleService {
-    @Autowired
-    private PeopleRepository peopleRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final PeopleRepository peopleRepository;
+    private final UserRepository userRepository;
 
+    public PeopleServiceImpl(PeopleRepository peopleRepository, UserRepository userRepository) {
+        this.peopleRepository = peopleRepository;
+        this.userRepository = userRepository;
+    }
 
 
     @Override
@@ -94,9 +95,9 @@ public class PeopleServiceImpl implements PeopleService {
 
     @Override
     public PeopleDTO castEntityToDTO(People people) {
-            PeopleDTO peopleDTO = new PeopleDTO();
-            User newUser = userRepository.findByUsername(people.getUser().getUsername()).get();
-            UserDTO userDTO = new UserDTO();
+            PeopleDTO peopleDTO = PeopleDTO.builder().build();
+            User newUser = userRepository.findByUsername(people.getUser().getUsername()).orElseThrow();
+            UserDTO userDTO = UserDTO.builder().build();
             Set<RoleDTO> roleDTOS = newUser.getRoles().stream()
                 .map(role -> {
                     RoleDTO roleDto = new RoleDTO();
@@ -133,7 +134,7 @@ public class PeopleServiceImpl implements PeopleService {
         person.setName(peopleDTO.getName());
         person.setPhone(peopleDTO.getPhone());
         person.setAddress(peopleDTO.getAddress());
-        User user = userRepository.findByUsername(peopleDTO.getUserDTO().getUsername()).get();
+        User user = userRepository.findByUsername(peopleDTO.getUserDTO().getUsername()).orElseThrow();
         person.setUser(user);
         return person;
     }

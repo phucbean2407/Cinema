@@ -1,21 +1,25 @@
 package fa.training.dto;
 
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
 
-@Data
+@Builder
+@Getter
+@Setter
 public class MovieDTO {
 
-    @NotNull(message = "Empty Movie Name")
+    @NotNull
     private String name;
-    @NotNull(message = "Empty Description")
+    @NotNull
     private String description;
     @NotNull()
-    @Positive(message = "Must > 0")
+    @Positive
     private int lengthMinute;
     @NotNull()
     @Positive()

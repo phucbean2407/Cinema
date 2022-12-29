@@ -3,7 +3,6 @@ package fa.training.controller;
 
 import fa.training.dto.MovieDTO;
 import fa.training.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +15,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class MovieController {
 
-    @Autowired
-    private MovieService movieService;
+    private final MovieService movieService;
+
+    public MovieController(MovieService movieService) {
+        this.movieService = movieService;
+    }
 
     @PostMapping("/add_movie")
     public ResponseEntity<MovieDTO> addMovie(@Valid @RequestBody MovieDTO movieDTO)throws NullPointerException{

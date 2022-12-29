@@ -3,10 +3,14 @@ package fa.training.service.impl;
 import fa.training.dto.MovieShowTimeDTO;
 import fa.training.dto.SeatDTO;
 import fa.training.entity.MovieShowTime;
-import fa.training.repository.*;
-import fa.training.service.*;
+import fa.training.repository.HallRepository;
+import fa.training.repository.MovieRepository;
+import fa.training.repository.MovieShowTimeRepository;
+import fa.training.service.CategoryService;
+import fa.training.service.HallService;
+import fa.training.service.MovieService;
+import fa.training.service.MovieShowTimeService;
 import fa.training.service.utils.DateTimeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,19 +25,22 @@ import java.util.stream.Collectors;
 
 @Service
 public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
-    @Autowired
-    private MovieShowTimeRepository movieShowTimeRepository;
-    @Autowired
-    private HallRepository hallRepository;
+    private final MovieShowTimeRepository movieShowTimeRepository;
+    private final HallRepository hallRepository;
 
-    @Autowired
-    private MovieService movieService;
-    @Autowired
-    private MovieRepository movieRepository;
-    @Autowired
-    private CategoryService categoryService;
-    @Autowired
-    private HallService hallService;
+    private final MovieService movieService;
+    private final MovieRepository movieRepository;
+    private final CategoryService categoryService;
+    private final HallService hallService;
+
+    public MovieShowTimeServiceImpl(MovieShowTimeRepository movieShowTimeRepository, HallRepository hallRepository, MovieService movieService, MovieRepository movieRepository, CategoryService categoryService, HallService hallService) {
+        this.movieShowTimeRepository = movieShowTimeRepository;
+        this.hallRepository = hallRepository;
+        this.movieService = movieService;
+        this.movieRepository = movieRepository;
+        this.categoryService = categoryService;
+        this.hallService = hallService;
+    }
 
     @Override
     public ResponseEntity<MovieShowTimeDTO> addMovieShowTime(MovieShowTimeDTO movieShowTimeDTO) {
@@ -69,7 +76,7 @@ public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
 
     @Override
     public MovieShowTimeDTO castEntityToDTO(MovieShowTime movieShowTime) {
-        MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
+        MovieShowTimeDTO movieShowTimeDTO = MovieShowTimeDTO.builder().build();
         movieShowTimeDTO.setDate(movieShowTime.getDate());
         movieShowTimeDTO.setMovieDTO(movieService.castEntityToDTO(movieRepository.findByName(movieShowTime.getMovie().getName())));
         movieShowTimeDTO.setHallDTO(hallService.findByName(movieShowTime.getHall().getName()).getBody());

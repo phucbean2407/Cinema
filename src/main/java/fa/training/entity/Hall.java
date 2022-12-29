@@ -13,7 +13,6 @@ import java.util.Set;
 @Entity
 @Table
 @Data
-
 public class Hall implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

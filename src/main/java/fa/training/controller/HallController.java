@@ -1,14 +1,10 @@
 package fa.training.controller;
 
 
-
 import fa.training.dto.HallDTO;
-
 import fa.training.service.HallService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -16,8 +12,11 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api")
 public class HallController {
-    @Autowired
-    HallService hallService;
+    private final HallService hallService;
+
+    public HallController(HallService hallService) {
+        this.hallService = hallService;
+    }
 
     @PostMapping("/edit_hall")
     public ResponseEntity<HallDTO> editHall(@Valid @RequestBody HallDTO hallDTO){

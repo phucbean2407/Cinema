@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 public class MovieShowTimeServiceImplTest {
 
     @InjectMocks
-    private MovieShowTimeServiceImpl movieShowTimeService = new MovieShowTimeServiceImpl();
+    private MovieShowTimeServiceImpl movieShowTimeService;
     @Mock
     private MovieShowTimeRepository movieShowTimeRepository;
     @Mock
@@ -68,7 +68,7 @@ public class MovieShowTimeServiceImplTest {
     @BeforeEach
     void setUp(){
         movieShowTime  = new MovieShowTime();
-        movieShowTimeDTO = new MovieShowTimeDTO();
+        movieShowTimeDTO = MovieShowTimeDTO.builder().build();
         time = new Time();
         time.setId(1L);
         time.setTime("08:00");
@@ -130,17 +130,17 @@ public class MovieShowTimeServiceImplTest {
     @Test
     void addMovieShowTimeTest() {
          //Given
-        movieShowTimeInsert = new MovieShowTimeDTO();
-        CategoryDTO categoryInsert = new CategoryDTO();
+        movieShowTimeInsert = MovieShowTimeDTO.builder().build();
+        CategoryDTO categoryInsert = CategoryDTO.builder().build();
         categoryInsert.setName(category.getName());
-        MovieDTO movieDTO = new MovieDTO();
+        MovieDTO movieDTO = MovieDTO.builder().build();
         movieDTO.setCategoryDTO(categoryInsert);
         movieDTO.setName(movie.getName());
         movieDTO.setRating(movie.getRating());
         movieDTO.setDescription(movie.getDescription());
         movieDTO.setLengthMinute(movie.getLengthMinute());
         movieShowTimeInsert.setMovieDTO(movieDTO);
-        HallDTO hallDTO = new HallDTO();
+        HallDTO hallDTO = HallDTO.builder().build();
         hallDTO.setName(hall.getName());
         movieShowTimeInsert.setHallDTO(hallDTO);
         movieShowTimeInsert.setDate(date);

@@ -3,7 +3,6 @@ package fa.training.controller;
 
 import fa.training.dto.PeopleDTO;
 import fa.training.service.PeopleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class PeopleController {
-    @Autowired
-    private PeopleService peopleService;
+    private final PeopleService peopleService;
+
+    public PeopleController(PeopleService peopleService) {
+        this.peopleService = peopleService;
+    }
 
 
     @PostMapping("/add_person")

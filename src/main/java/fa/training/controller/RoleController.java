@@ -2,7 +2,6 @@ package fa.training.controller;
 
 import fa.training.dto.RoleDTO;
 import fa.training.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +12,11 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class RoleController {
 
-    @Autowired
-    RoleService roleService;
+    private final RoleService roleService;
+
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @PostMapping("/add_role")
     public ResponseEntity<RoleDTO> addRole(@Valid @RequestBody RoleDTO roleDTO) {

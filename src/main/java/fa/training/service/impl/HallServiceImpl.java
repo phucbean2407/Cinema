@@ -4,15 +4,18 @@ import fa.training.dto.HallDTO;
 import fa.training.entity.Hall;
 import fa.training.repository.HallRepository;
 import fa.training.service.HallService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HallServiceImpl implements HallService {
-    @Autowired
-    private HallRepository hallRepository;
+    private final HallRepository hallRepository;
+
+    public HallServiceImpl(HallRepository hallRepository) {
+        this.hallRepository = hallRepository;
+    }
+
     @Override
     public ResponseEntity<HallDTO> editTheaterHall(HallDTO hallDTO) {
         try{
@@ -38,8 +41,7 @@ public class HallServiceImpl implements HallService {
 
     @Override
     public HallDTO castEntityToDTO(Hall hall) {
-        HallDTO hallDTO = new HallDTO();
-        hallDTO.setName(hall.getName());
+        HallDTO hallDTO = HallDTO.builder().name(hall.getName()).build();
         return hallDTO;
     }
     @Override

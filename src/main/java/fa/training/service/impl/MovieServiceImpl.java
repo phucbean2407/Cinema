@@ -31,7 +31,7 @@ public class MovieServiceImpl implements MovieService {
             movieRepository.save(movie);
             return new ResponseEntity<>(movieDTO,HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(),HttpStatus.OK);
+            return new ResponseEntity(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -103,14 +103,15 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MovieDTO castEntityToDTO(Movie movie) {
-        MovieDTO movieDTO = new MovieDTO();
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setName(movie.getCategory().getName());
-        movieDTO.setName(movie.getName());
-        movieDTO.setDescription(movie.getDescription());
-        movieDTO.setRating(movie.getRating());
-        movieDTO.setLengthMinute(movie.getLengthMinute());
-        movieDTO.setCategoryDTO(categoryDTO);
+        CategoryDTO categoryDTO = CategoryDTO.builder()
+                .name(movie.getCategory().getName())
+                .build();
+        MovieDTO movieDTO = MovieDTO.builder()
+                .name(movie.getName())
+                .description(movie.getDescription())
+                .rating(movie.getRating())
+                .lengthMinute(movie.getLengthMinute())
+                .categoryDTO(categoryDTO).build();
         return movieDTO;
     }
 

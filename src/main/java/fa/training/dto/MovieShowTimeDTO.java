@@ -2,7 +2,9 @@ package fa.training.dto;
 
 
 import fa.training.entity.Time;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -11,7 +13,9 @@ import java.util.Date;
 import java.util.Set;
 
 
-@Data
+@Builder
+@Getter
+@Setter
 public class MovieShowTimeDTO {
 
     @NotNull

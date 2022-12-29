@@ -1,10 +1,12 @@
 package fa.training.dto;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-@Data
+@Builder
+@Getter
 public class ChooseOrder {
     @NotNull
     private TicketDTO ticketDTO;

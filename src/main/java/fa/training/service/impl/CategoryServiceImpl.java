@@ -5,20 +5,23 @@ import fa.training.dto.CategoryDTO;
 import fa.training.entity.Category;
 import fa.training.repository.CategoryRepository;
 import fa.training.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import org.hibernate.exception.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
     @Override
     public ResponseEntity<CategoryDTO> addCategory(CategoryDTO categoryDTO) {
         //Convert DTO to Entity
@@ -87,8 +90,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO castEntityToDTO(Category category) {
-        CategoryDTO categoryDTO = new CategoryDTO();
-        categoryDTO.setName(category.getName());
+        CategoryDTO categoryDTO = CategoryDTO.builder()
+                .name(category.getName())
+                .build();
         return categoryDTO;
     }
 

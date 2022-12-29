@@ -1,13 +1,17 @@
 package fa.training.dto;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
-@Data
+@Builder
+@Getter
+@Setter
 public class UserDTO {
 
     @NotBlank

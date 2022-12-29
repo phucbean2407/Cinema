@@ -4,7 +4,6 @@ package fa.training.controller;
 import fa.training.entity.login.LoginRequest;
 import fa.training.entity.login.SignupRequest;
 import fa.training.security.service.AuthenticatorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,11 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticatorService authenticatorService;
+    private final AuthenticatorService authenticatorService;
+
+    public AuthController(AuthenticatorService authenticatorService) {
+        this.authenticatorService = authenticatorService;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

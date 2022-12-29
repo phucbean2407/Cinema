@@ -35,10 +35,10 @@ public class CategoryServiceImplTest {
     CategoryDTO exceptionCategory;
     @BeforeEach
     void setUp() {
-        categoryDTO = new CategoryDTO();
+        categoryDTO = CategoryDTO.builder().build();
         categoryDTO.setName("Cartoon");
 
-        categoryDTO2 = new CategoryDTO();
+        categoryDTO2 = CategoryDTO.builder().build();
         categoryDTO2.setName("Action");
 
         category = new Category();
@@ -50,7 +50,7 @@ public class CategoryServiceImplTest {
         category2.setId(2L);
 
 
-        exceptionCategory = new CategoryDTO();
+        exceptionCategory = CategoryDTO.builder().build();
         exceptionCategory.setName("Cartoon");
 
     }

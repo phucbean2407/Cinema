@@ -73,7 +73,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public TicketDTO castEntityToDTO(Ticket ticket) {
-        TicketDTO ticketDTO = new TicketDTO();
+        TicketDTO ticketDTO = TicketDTO.builder().build();
         ticketDTO.setId(ticket.getId());
         ticketDTO.setPaymentMethod(ticket.getPaymentMethod());
         ticketDTO.setPrice(ticket.getPrice());
@@ -81,9 +81,9 @@ public class TicketServiceImpl implements TicketService {
         ticketDTO.setTotalMoney(ticket.getTotalMoney());
         //Set PeopleDTO
         People people = peopleRepository.findByEmail(ticket.getPeople().getUser().getEmail());
-        PeopleDTO peopleDTO = new PeopleDTO();
+        PeopleDTO peopleDTO = PeopleDTO.builder().build();
         User newUser =  people.getUser();
-        UserDTO userDTO = new UserDTO();
+        UserDTO userDTO = UserDTO.builder().build();
         Set<RoleDTO> roleDTOS = newUser.getRoles().stream()
                 .map(role -> {
                     RoleDTO roleDto = new RoleDTO();
@@ -101,11 +101,11 @@ public class TicketServiceImpl implements TicketService {
         ticketDTO.setPeopleDTO(peopleDTO);
         //Set MovieShowTime
         MovieShowTime movieShowTime = ticket.getMovieShowTime();
-        MovieShowTimeDTO movieShowTimeDTO = new MovieShowTimeDTO();
+        MovieShowTimeDTO movieShowTimeDTO = MovieShowTimeDTO.builder().build();
         movieShowTimeDTO.setDate(movieShowTime.getDate());
         Movie movie = movieShowTime.getMovie();
-        MovieDTO movieDTO = new MovieDTO();
-        CategoryDTO categoryDTO = new CategoryDTO();
+        MovieDTO movieDTO = MovieDTO.builder().build();
+        CategoryDTO categoryDTO = CategoryDTO.builder().build();
         categoryDTO.setName(movie.getCategory().getName());
         movieDTO.setName(movie.getName());
         movieDTO.setDescription(movie.getDescription());
@@ -115,7 +115,7 @@ public class TicketServiceImpl implements TicketService {
         movieShowTimeDTO.setMovieDTO(movieDTO);
 
         Hall hall = movieShowTime.getHall();
-        HallDTO hallDTO = new HallDTO();
+        HallDTO hallDTO = HallDTO.builder().build();
         hallDTO.setName(hall.getName());
         movieShowTimeDTO.setHallDTO(hallDTO);
 

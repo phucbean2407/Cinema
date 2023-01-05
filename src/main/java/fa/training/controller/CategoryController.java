@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController("/api")
@@ -19,34 +20,34 @@ public class CategoryController {
     }
 
     @PostMapping("/add_category")
-    public ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.addCategory(categoryDTO);
+    public ResponseEntity<String> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(categoryService.addCategory(categoryDTO));
     }
     @PostMapping("/add_category1")
-    public ResponseEntity<List<CategoryDTO>> addCategoryList(@Valid @RequestBody List<CategoryDTO> categoryDTOs) {
-        return categoryService.addCategoryList(categoryDTOs);
+    public ResponseEntity<String> addCategoryList(@Valid @RequestBody List<CategoryDTO> categoryDTOs) {
+        return ResponseEntity.ok(categoryService.addCategoryList(categoryDTOs));
     }
     @DeleteMapping("/del_category")
-    public String deleteCategory(@RequestParam(value = "id") long categoryId) {
-        if (Boolean.TRUE.equals(categoryService.deleteCategory(categoryId).getBody())) {
-            return "Complete";
+    public ResponseEntity<String> deleteCategory(@RequestParam(value = "id") long categoryId) {
+        if (Objects.equals(Boolean.TRUE, categoryService.deleteCategory(categoryId))) {
+            return ResponseEntity.ok("Delete complete");
         } else {
-            return "Can not find Category which is deleted";
+            return ResponseEntity.ok("Can not find Category which is deleted");
         }
     }
     @PostMapping("/edit_category")
-    public ResponseEntity<CategoryDTO> editCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.editCategory(categoryDTO);
+    public ResponseEntity<String> editCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity.ok(categoryService.editCategory(categoryDTO));
     }
     //Code này ngu nhỉ :)))) Tự nhiên tìm tên có tên :)) Thôi sửa thành get có tồn tại k
     @GetMapping("/get_category")
     public ResponseEntity<CategoryDTO> getCategoryExist(@RequestParam("name") String name){
-        return categoryService.findByName(name);
+        return ResponseEntity.ok(categoryService.findByName(name));
     }
 
     @GetMapping("/categories")
     public ResponseEntity<List<CategoryDTO>> getAllCategory(){
-        return categoryService.findAll();
+        return ResponseEntity.ok(categoryService.findAll());
     }
 }
 

@@ -21,18 +21,18 @@ public class MovieShowTimeController {
 
 
     @PostMapping("/add_movie_show_time")
-    public ResponseEntity<MovieShowTimeDTO> addMovieShowTime(@Valid @RequestBody MovieShowTimeDTO movieShowTimeDTO) throws ParseException {
-        return movieShowTimeService.addMovieShowTime(movieShowTimeDTO);
+    public ResponseEntity<?> addMovieShowTime(@Valid @RequestBody MovieShowTimeDTO movieShowTimeDTO) throws ParseException {
+        return ResponseEntity.ok(movieShowTimeService.addMovieShowTime(movieShowTimeDTO));
     }
 
 
 
     @GetMapping("/get_movie_show_time")
     public ResponseEntity<List<MovieShowTimeDTO>> findByDateAndFreeSeats(@RequestParam("date")String date){
-        return movieShowTimeService.findByDateAndFreeSeats(date);
+        return ResponseEntity.ok(movieShowTimeService.findByDateAndFreeSeats(date));
     }
     @GetMapping("/movie_show_times")
     public ResponseEntity<List<MovieShowTimeDTO>> getAllFindAllAndFreeSeats(){
-        return movieShowTimeService.findAllAndFreeSeats();
+        return ResponseEntity.ok(movieShowTimeService.findAllAndFreeSeats());
     }
 }

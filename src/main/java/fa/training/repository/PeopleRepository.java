@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PeopleRepository extends JpaRepository<People, Long> {
@@ -13,7 +14,7 @@ public interface PeopleRepository extends JpaRepository<People, Long> {
             "from cinema.people p INNER JOIN cinema.users s " +
             "on p.user_id = s.id " +
             "where s.email = :email ", nativeQuery = true)
-    People findByEmail(String email);
+    Optional<People> findByEmail(String email);
     @Query(value = "select p.* " +
             "from cinema.people p INNER JOIN cinema.users s " +
             "on p.user_id = s.id INNER JOIN cinema.user_roles ur " +

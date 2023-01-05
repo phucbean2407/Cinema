@@ -1,6 +1,6 @@
 package fa.training.security.service;
 
-import fa.training.config.AppConfig;
+import fa.training.config.ModelMapperConfig;
 import fa.training.dto.PeopleDTO;
 import fa.training.dto.RoleDTO;
 import fa.training.dto.UserDTO;
@@ -32,16 +32,16 @@ import java.util.stream.Collectors;
 @Service
 public class AuthenticatorServiceImpl  implements AuthenticatorService{
     private final UserRepository userRepository;
-    private final AppConfig appConfig;
+    private final ModelMapperConfig modelMapperConfig;
     private final PasswordEncoder encoder;
     private final RoleRepository roleRepository;
     private final PeopleRepository peopleRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    public AuthenticatorServiceImpl(UserRepository userRepository, AppConfig appConfig, PasswordEncoder encoder, RoleRepository roleRepository, PeopleRepository peopleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+    public AuthenticatorServiceImpl(UserRepository userRepository, ModelMapperConfig modelMapperConfig, PasswordEncoder encoder, RoleRepository roleRepository, PeopleRepository peopleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
-        this.appConfig = appConfig;
+        this.modelMapperConfig = modelMapperConfig;
         this.encoder = encoder;
         this.roleRepository = roleRepository;
         this.peopleRepository = peopleRepository;
@@ -121,28 +121,25 @@ public class AuthenticatorServiceImpl  implements AuthenticatorService{
         }
         user.setRoles(roles);
         userRepository.save(user);
-
         User newUser = userRepository.findByUsername(signUpRequest.getPeopleDTO().getUserDTO().getUsername())
                 .orElseThrow(() -> new RuntimeException(""));
-        UserDTO userDTO = UserDTO.builder().build();
+        UserDTO userDTO = new UserDTO();
         userDTO.setRoleDTOs(newUser.getRoles()
                 .stream()
-                .map(role -> appConfig.modelMapper().map(role, RoleDTO.class))
+                .map(role -> modelMapperConfig.modelMapper().map(role, RoleDTO.class))
                 .collect(Collectors.toSet()));
         userDTO.setUsername(newUser.getUsername());
         userDTO.setEmail(newUser.getEmail());
-        PeopleDTO peopleDTO = signUpRequest.getPeopleDTO();
-        peopleDTO.setUserDTO(userDTO);
+
         People person = new People();
-        if(peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()) !=null) {
-            person = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail());
-        }
-        person.setName(peopleDTO.getName());
-        person.setPhone(peopleDTO.getPhone());
-        person.setBirthday(peopleDTO.getBirthday());
-        person.setAddress(peopleDTO.getAddress());
+        person.setName(signUpRequest.getPeopleDTO().getName());
+        person.setPhone(signUpRequest.getPeopleDTO().getPhone());
+        person.setBirthday(signUpRequest.getPeopleDTO().getBirthday());
+        person.setAddress(signUpRequest.getPeopleDTO().getAddress());
         person.setUser(user);
         peopleRepository.save(person);
+        PeopleDTO peopleDTO = signUpRequest.getPeopleDTO();
+        peopleDTO.setUserDTO(userDTO);
         return ResponseEntity.ok((peopleDTO));
     }
 }

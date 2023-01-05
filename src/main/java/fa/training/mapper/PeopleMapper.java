@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.PeopleDTO;
 import fa.training.dto.RoleDTO;
@@ -7,18 +7,24 @@ import fa.training.entity.People;
 import fa.training.entity.login.User;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.UserRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+@Component
+public class PeopleMapper {
 
-public class PeopleUtils {
+    private final UserRepository userRepository;
+    private final PeopleRepository peopleRepository;
 
-    static UserRepository userRepository;
-    static PeopleRepository peopleRepository;
+    public PeopleMapper(UserRepository userRepository, PeopleRepository peopleRepository) {
+        this.userRepository = userRepository;
+        this.peopleRepository = peopleRepository;
+    }
 
-    public static PeopleDTO castEntityToDTO(People people) {
+    public PeopleDTO castEntityToDTO(People people) {
         PeopleDTO peopleDTO = new PeopleDTO();
         User newUser = userRepository.findByUsername(people.getUser().getUsername()).orElseThrow();
         UserDTO userDTO = new UserDTO();
@@ -39,7 +45,7 @@ public class PeopleUtils {
         return peopleDTO;
     }
 
-    public static List<PeopleDTO> castListEntityToDTO(List<People> people) {
+    public List<PeopleDTO> castListEntityToDTO(List<People> people) {
         List<PeopleDTO> peopleDTOS= new ArrayList<>();
         for (People person : people) {
             PeopleDTO personDTO = castEntityToDTO(person);
@@ -48,7 +54,7 @@ public class PeopleUtils {
         return peopleDTOS;
     }
 
-    public static People castDTOToEntity(PeopleDTO peopleDTO) {
+    public People castDTOToEntity(PeopleDTO peopleDTO) {
         People person = new People();
         if(peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()).isPresent()) {
             person = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()).orElseThrow();

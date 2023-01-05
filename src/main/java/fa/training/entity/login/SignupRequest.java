@@ -1,15 +1,13 @@
 package fa.training.entity.login;
 
 import fa.training.dto.PeopleDTO;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-@Builder
-@Getter
+@Data
 public class SignupRequest {
 
     @NotNull

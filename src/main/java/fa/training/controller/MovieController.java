@@ -22,42 +22,42 @@ public class MovieController {
     }
 
     @PostMapping("/add_movie")
-    public ResponseEntity<MovieDTO> addMovie(@Valid @RequestBody MovieDTO movieDTO)throws NullPointerException{
-        return movieService.addMovie(movieDTO);
+    public ResponseEntity<?> addMovie(@Valid @RequestBody MovieDTO movieDTO) {
+        return ResponseEntity.ok(movieService.addMovie(movieDTO));
     }
 
     @PostMapping("/add_movie_list")
-    public ResponseEntity<List<MovieDTO>> addMovieFromList(@RequestBody List<MovieDTO> movieDTOS)throws NullPointerException{
-        return movieService.addMovieFromList(movieDTOS);
+    public ResponseEntity<?> addMovieFromList(@RequestBody List<MovieDTO> movieDTOS)throws NullPointerException{
+        return ResponseEntity.ok(movieService.addMovieFromList(movieDTOS));
     }
 
 
 
     @DeleteMapping("/del_movie")
-    public String deleteMovie(@RequestParam("name") String name)throws NullPointerException{
-        if(Boolean.TRUE.equals(movieService.deleteMovieByName(name).getBody())){
-            return "Complete!";
+    public ResponseEntity<?> deleteMovie(@RequestParam("name") String name)throws NullPointerException{
+        if(Boolean.TRUE.equals(movieService.deleteMovieByName(name))){
+            return ResponseEntity.ok("Complete!");
         } else {
-            return "Can not delete";
+            return ResponseEntity.ok("Can not delete");
         }
     }
 
     @PostMapping("/edit_movie")
-    public ResponseEntity<MovieDTO> editProduct(@Valid @RequestBody MovieDTO movieDTO)throws NullPointerException{
-        return movieService.editMovie(movieDTO);
+    public ResponseEntity<?> editProduct(@Valid @RequestBody MovieDTO movieDTO)throws NullPointerException{
+        return ResponseEntity.ok(movieService.editMovie(movieDTO));
     }
     @GetMapping("/get_movie")
     public ResponseEntity<List<MovieDTO>> getMovie(@RequestParam("name") String name)throws NullPointerException{
-       return movieService.findNeededMovies(name);
+       return ResponseEntity.ok(movieService.findNeededMovies(name));
     }
     @GetMapping("/get-movie-by-category")
     public ResponseEntity<List<MovieDTO>> getMovieByCategory(@RequestParam("name") String categoryName)throws NullPointerException{
-        return movieService.findByCategory(categoryName);
+        return ResponseEntity.ok(movieService.findByCategory(categoryName));
     }
 
     @GetMapping("/movies")
     public ResponseEntity<List<MovieDTO>> getAllMovies(){
-        return movieService.findAllFMovies();
+        return ResponseEntity.ok(movieService.findAllFMovies());
     }
 
 }

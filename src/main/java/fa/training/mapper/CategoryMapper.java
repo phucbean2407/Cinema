@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.CategoryDTO;
 import fa.training.entity.Category;
@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CategoryUtils {
+public class CategoryMapper {
 
 
-    public static CategoryDTO castEntityToDTO(Category category) {
+    public CategoryDTO castEntityToDTO(Category category) {
         return  CategoryDTO.builder()
                 .name(category.getName())
                 .build();
     }
 
-    public static List<CategoryDTO> castListEntityToDTO(List<Category> categories) {
+    public List<CategoryDTO> castListEntityToDTO(List<Category> categories) {
         List<CategoryDTO> categoryDTOS = new ArrayList<>();
         for(Category category : categories){
             CategoryDTO categoryDTO = castEntityToDTO(category);
@@ -26,7 +26,7 @@ public class CategoryUtils {
         return categoryDTOS;
     }
 
-    public static Category castDTOToEntity(CategoryDTO categoryDTO) {
+    public Category castDTOToEntity(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setName(categoryDTO.getName());
         return category;

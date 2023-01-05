@@ -1,22 +1,20 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.RoleDTO;
 import fa.training.entity.Role;
-import fa.training.repository.RoleRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoleUtils {
-    static RoleRepository roleRepository;
+public class RoleMapper {
 
-    public static RoleDTO castEntityToDTO(Role role) {
+    public RoleDTO castEntityToDTO(Role role) {
         RoleDTO roleDTO = new RoleDTO();
         roleDTO.setName(role.getName());
         return roleDTO;
     }
 
 
-    public static Role castDTOToEntity(RoleDTO roleDTO) {
+    public Role castDTOToEntity(RoleDTO roleDTO) {
         Role role = new Role();
         role.setName(roleDTO.getName());
         return role;

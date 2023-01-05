@@ -1,11 +1,9 @@
 package fa.training.entity.login;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-@Builder
-@Getter
+@Data
 public class LoginRequest {
     @NotBlank
     private String username;

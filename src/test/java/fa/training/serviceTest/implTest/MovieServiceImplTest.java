@@ -4,7 +4,7 @@ import fa.training.dto.CategoryDTO;
 import fa.training.dto.MovieDTO;
 import fa.training.entity.Category;
 import fa.training.entity.Movie;
-import fa.training.repository.CategoryRepository;
+import fa.training.mapper.MovieMapper;
 import fa.training.repository.MovieRepository;
 import fa.training.service.impl.MovieServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,16 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,9 +26,8 @@ public class MovieServiceImplTest {
 
     @Mock
     private MovieRepository movieRepository;
-
     @Mock
-    private CategoryRepository categoryRepository;
+    private MovieMapper movieMapper;
     @InjectMocks
     private MovieServiceImpl movieService;
 
@@ -46,20 +41,19 @@ public class MovieServiceImplTest {
     @BeforeEach
     void setUp() throws Exception{
 
-        categoryDTO = CategoryDTO.builder().name("Cartoon")
-                .build();
-
+        categoryDTO = CategoryDTO.builder()
+                .name("Cartoon").build();
 
         category = new Category();
         category.setId(1);
         category.setName("Cartoon");
 
-        movieDTO = MovieDTO.builder().build();
-        movieDTO.setName("Doraemon");
-        movieDTO.setDescription("AAABBBCCC");
-        movieDTO.setRating(8.9);
-        movieDTO.setLengthMinute(180);
-        movieDTO.setCategoryDTO(categoryDTO);
+        movieDTO = MovieDTO.builder()
+                .name("Doraemon")
+                .description("AAABBBCCC")
+                .rating(8.9)
+                .lengthMinute(180)
+                .categoryDTO(categoryDTO).build();
 
         movies = new ArrayList<>();
 
@@ -73,18 +67,17 @@ public class MovieServiceImplTest {
         movie.setRating(9.3);
         movie.setDescription("One day, Nobita picks a small rocket from which a small-sized humanoid alien Papi comes out.");
         movie.setLengthMinute(108);
+        movies.add(movie);
     }
     @Test
     void addMovieTest(){
         //Given
-        MovieDTO movieInsert = MovieDTO.builder().build();
-        CategoryDTO categoryDTO = CategoryDTO.builder().build();
-        categoryDTO.setName("Cartoon");
-        movieInsert.setCategoryDTO(categoryDTO);
-        movieInsert.setName("One Piece Film: Red");
-        movieInsert.setRating(9.4);
-        movieInsert.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
-        movieInsert.setLengthMinute(115);
+        MovieDTO movieInsert = MovieDTO.builder()
+                .categoryDTO(categoryDTO)
+                .name("One Piece Film: Red")
+                .rating(9.4)
+                .description("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.")
+                .lengthMinute(115).build();
 
         Movie movieCast = new Movie();
         Category categoryInsert = new Category();
@@ -96,39 +89,101 @@ public class MovieServiceImplTest {
         movieCast.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
         movieCast.setLengthMinute(115);
 
-        //Viết thêm hàm test cast
+        Movie movie = new Movie();
+        movie.setName("One Piece Film: Red");
+        movie.setCategory(category);
+        movie.setRating(9.4);
+        movie.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
+        movie.setLengthMinute(115);
+        String actual = "Add Complete";
+
         // When
-        when(categoryRepository.findByName(categoryDTO.getName())).thenReturn(Optional.of(category));
-        when(movieRepository.save(any(Movie.class))).then(new Answer<Movie>() {
-            @Override
-            public Movie answer(InvocationOnMock invocation) {
-                Movie movie = invocation.getArgument(0);
-                movie.setName("One Piece Film: Red");
-                movie.setCategory(category);
-                movie.setRating(9.4);
-                movie.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
-                movie.setLengthMinute(115);
-                return movie;
-            }
-        });
+        when(movieMapper.castDTOToEntity(movieInsert)).thenReturn(movieCast);
+        when(movieRepository.save(any(Movie.class))).thenReturn(movie);
         //Then
-        Movie movieCasted = movieService.castDTOToEntity(movieInsert);
-        assertEquals(movieCast,movieCasted);
-        MovieDTO insertedDTO = movieService.addMovie(movieInsert).getBody();
-        verify(movieRepository).save(movieCasted);
-        assertNotNull(movie);
-        assertEquals(movieInsert,insertedDTO);
+        assertEquals(movie,movieCast);
+        String expected = movieService.addMovie(movieInsert);
+        verify(movieRepository).save(movieCast);
+        assertEquals(actual,expected);
+    }
+
+    @Test
+    void addMovieFromList() {
+        //Given
+        MovieDTO movieInsert = MovieDTO.builder()
+                .categoryDTO(categoryDTO)
+                .name("One Piece Film: Red")
+                .rating(9.4)
+                .description("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.")
+                .lengthMinute(115).build();
+
+        Movie movie = new Movie();
+        Category categoryInsert = new Category();
+        movie.setName("One Piece Film: Red");
+        movie.setCategory(category);
+        movie.setRating(9.4);
+        movie.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
+        movie.setLengthMinute(115);
+
+
+        Movie movieCast = new Movie();
+        categoryInsert.setId(1L);
+        categoryInsert.setName("Cartoon");
+        movieCast.setCategory(categoryInsert);
+        movieCast.setRating(9.4);
+        movieCast.setName("One Piece Film: Red");
+        movieCast.setDescription("The story is set on the Island of Music Elegia, where Uta, the world's greatest diva, holds her first ever live concert and reveals herself to the public. The Straw Hats, pirates, Marines and fans from across the world gather to enjoy Uta's voice, which has been described as otherworldly. However, the event begins with the shocking revelation that Uta is the daughter of Shanks.");
+        movieCast.setLengthMinute(115);
+
+        String actual = "Add List Complete";
+
+        List<MovieDTO> listMovieDTO = new ArrayList<>();
+        listMovieDTO.add(movieInsert);
+        List<Movie> listMovie = new ArrayList<>();
+        listMovie.add(movieCast);
+
+        //When
+        when(movieMapper.castDTOToEntity(movieInsert)).thenReturn(movieCast);
+        when(movieRepository.save(movieCast)).thenReturn(movie);
+        //Then
+        String expected = movieService.addMovieFromList(listMovieDTO);
+        verify(movieRepository).save(movieCast);
+        assertEquals(actual,expected);
     }
     @Test
     void findNeededMoviesTest(){
         //Given
-        //Exists on setUp()
+        MovieDTO movieFinded = MovieDTO.builder()
+                .name("Nobita's Little Star Wars 4")
+                .categoryDTO(categoryDTO)
+                .rating(9.3)
+                .description("One day, Nobita picks a small rocket from which a small-sized humanoid alien Papi comes out.")
+                .lengthMinute(108).build();
+        List<MovieDTO> listMovieCast = new ArrayList<>();
+        listMovieCast.add(movieFinded);
         //When
-        when(movieRepository.findNeededMovies(movieDTO.getName())).thenReturn(movies);
+        when(movieRepository.findNeededMovies(movie.getName())).thenReturn(movies);
+        when(movieMapper.castListEntityToDTO(movies)).thenReturn(listMovieCast);
         //Then
-        movieDTOS = movieService.castListEntityToDTO(movies);
-        List<MovieDTO> movieDTOS2 = movieService.findNeededMovies(movieDTO.getName()).getBody();
-        assertEquals(movieDTOS2,movieDTOS);
+        List<MovieDTO> listMovieFinded = movieService.findNeededMovies(movieFinded.getName());
+        assertEquals(listMovieCast,listMovieFinded);
     }
+
+    @Test
+    void editMovieTest() {
+    }
+
+    @Test
+    void findAllFMoviesTest() {
+    }
+
+    @Test
+    void findBestMovieTest() {
+    }
+
+    @Test
+    void findByCategoryTest() {
+    }
+
 
 }

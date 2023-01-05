@@ -19,13 +19,13 @@ public class HallController {
     }
 
     @PostMapping("/edit_hall")
-    public ResponseEntity<HallDTO> editHall(@Valid @RequestBody HallDTO hallDTO){
-        return hallService.editTheaterHall(hallDTO);
+    public ResponseEntity<?> editHall(@Valid @RequestBody HallDTO hallDTO){
+        return ResponseEntity.ok(hallService.editTheaterHall(hallDTO));
     }
 
     @GetMapping("/find_hall_by_name")
     public ResponseEntity<HallDTO> getName(@RequestParam("name") String name){
-        return hallService.findByName(name);
+        return ResponseEntity.ok(hallService.findByName(name));
     }
 }
 

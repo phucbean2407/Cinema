@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.CategoryDTO;
 import fa.training.dto.MovieDTO;
@@ -10,10 +10,17 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 @Component
-public class MovieUtils {
-    static CategoryRepository categoryRepository;
-    public static MovieDTO castEntityToDTO(Movie movie) {
+public class MovieMapper {
+
+    private final CategoryRepository categoryRepository;
+
+    public MovieMapper(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    public  MovieDTO castEntityToDTO(Movie movie) {
         CategoryDTO categoryDTO = CategoryDTO.builder()
                 .name(movie.getCategory().getName())
                 .build();
@@ -25,7 +32,7 @@ public class MovieUtils {
                 .categoryDTO(categoryDTO).build();
     }
 
-    public static List<MovieDTO> castListEntityToDTO(List<Movie> movies) {
+    public List<MovieDTO> castListEntityToDTO(List<Movie> movies) {
         List<MovieDTO> movieDTOS = new ArrayList<>();
         for (Movie movie : movies) {
             MovieDTO movieDTO = castEntityToDTO(movie);
@@ -34,7 +41,7 @@ public class MovieUtils {
         return movieDTOS;
     }
 
-    public static Movie castDTOToEntity(MovieDTO movieDTO) {
+    public Movie castDTOToEntity(MovieDTO movieDTO) {
         Movie movie = new Movie();
         movie.setName(movieDTO.getName());
         movie.setDescription(movieDTO.getDescription());
@@ -44,5 +51,6 @@ public class MovieUtils {
                 .orElseThrow(() -> new NoSuchElementException("Not found Category."));
         movie.setCategory(category);
         return movie;
+
     }
 }

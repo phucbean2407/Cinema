@@ -21,38 +21,55 @@ public class PeopleController {
 
 
     @PostMapping("/add_person")
-    public ResponseEntity<PeopleDTO> addPeople(@RequestBody @Valid PeopleDTO peopleDTO) throws NullPointerException{
-        return peopleService.addPeople(peopleDTO);
+    public ResponseEntity<?> addPeople(@RequestBody @Valid PeopleDTO peopleDTO) throws NullPointerException{
+        return ResponseEntity.ok(peopleService.addPeople(peopleDTO));
     }
     @DeleteMapping("/del_person")
-    public String deleteCustomer(@RequestParam(name = "email") String email) {
-        if(Boolean.TRUE.equals(peopleService.deletePeople(email).getBody())){
-            return "Complete";
+    public ResponseEntity<?> deleteCustomer(@RequestParam(name = "email") String email) {
+        if(Boolean.TRUE.equals(peopleService.deletePeople(email))){
+            return ResponseEntity.ok("Complete");
         }
         else{
-            return "Can not delete that person";
+            return ResponseEntity.notFound().build();
         }
     }
     @PostMapping("/edit_person")
-    public ResponseEntity<PeopleDTO> editCustomer(@Valid @RequestBody PeopleDTO peopleDTO) throws NullPointerException{
-        return peopleService.editPeople(peopleDTO);
+    public ResponseEntity<?> editCustomer(@Valid @RequestBody PeopleDTO peopleDTO) throws NullPointerException{
+        return ResponseEntity.ok(peopleService.editPeople(peopleDTO));
     }
     @GetMapping("/get_person")
     public ResponseEntity<PeopleDTO> getPerson(@RequestParam(name = "email") String email){
-        return peopleService.findByEmail(email);
+        if(peopleService.findByEmail(email)!=null)
+            return ResponseEntity.ok(peopleService.findByEmail(email));
+        else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
     @GetMapping("/get_admin")
     public ResponseEntity<List<PeopleDTO>> getAdmin(){
-        return peopleService.getAdmins();
+        if(peopleService.getAdmins().size()>0)
+            return ResponseEntity.ok(peopleService.getAdmins());
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/get_birthday")
     public ResponseEntity<List<PeopleDTO>> getPersonBirthday(@RequestParam(name = "birthDay") String birthDay){
-        return peopleService.getCustomerBirthDay(birthDay);
+        if(peopleService.getCustomerBirthDay(birthDay) != null)
+            return ResponseEntity.ok(peopleService.getCustomerBirthDay(birthDay));
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
     @GetMapping("/customers")
     public ResponseEntity<List<PeopleDTO>> getAllCustomers(){
-        return peopleService.getAllCustomer();
+        if(peopleService.getAllCustomer().size()>0)
+            return ResponseEntity.ok(peopleService.getAllCustomer());
+        else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 

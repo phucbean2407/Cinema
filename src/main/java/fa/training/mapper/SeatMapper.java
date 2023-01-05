@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.SeatDTO;
 import fa.training.entity.Seat;
@@ -8,18 +8,22 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 @Component
-public class SeatUtils {
+public class SeatMapper {
 
-    static SeatRepository seatRepository;
+    private final SeatRepository seatRepository;
 
-    public static SeatDTO castEntityToDTO(Seat seat) {
+    public SeatMapper(SeatRepository seatRepository) {
+        this.seatRepository = seatRepository;
+    }
+
+    public SeatDTO castEntityToDTO(Seat seat) {
         SeatDTO seatDTO = new SeatDTO();
         seatDTO.setName(seat.getName());
         return seatDTO;
     }
 
 
-    public static List<SeatDTO> castListEntityToDTO(List<Seat> seats) {
+    public List<SeatDTO> castListEntityToDTO(List<Seat> seats) {
         List<SeatDTO> seatDTOS = new ArrayList<>();
         for(Seat seat: seats) {
             SeatDTO seatDTO = castEntityToDTO(seat);
@@ -29,12 +33,12 @@ public class SeatUtils {
     }
 
 
-    public static Seat castDTOToEntity(SeatDTO seatDTO) {
+    public Seat castDTOToEntity(SeatDTO seatDTO) {
         return seatRepository.findByName(seatDTO.getName()).orElseThrow();
     }
 
 
-    public static List<Seat> castListDTOToEntity(List<SeatDTO> seatDTOS) {
+    public List<Seat> castListDTOToEntity(List<SeatDTO> seatDTOS) {
         List<Seat> seats = new ArrayList<>();
         for(SeatDTO seatDTO: seatDTOS) {
             Seat seat = castDTOToEntity(seatDTO);

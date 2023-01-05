@@ -42,8 +42,6 @@ public class Movie implements Serializable {
     private Set<MovieShowTime> movieShowTimes;
 
 
-
-
 }
 
 

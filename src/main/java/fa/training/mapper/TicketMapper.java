@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.*;
 import fa.training.entity.*;
@@ -7,6 +7,7 @@ import fa.training.repository.HallRepository;
 import fa.training.repository.MovieRepository;
 import fa.training.repository.MovieShowTimeRepository;
 import fa.training.repository.PeopleRepository;
+import fa.training.service.utils.DateTimeUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,15 +16,22 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 @Component
-public class TicketUtils {
+public class TicketMapper {
 
-    static PeopleRepository peopleRepository;
-    static MovieShowTimeRepository movieShowTimeRepository;
-    static MovieRepository movieRepository;
-    static HallRepository hallRepository;
+    private final PeopleRepository peopleRepository;
+    private final MovieShowTimeRepository movieShowTimeRepository;
+    private final MovieRepository movieRepository;
+    private final HallRepository hallRepository;
+
+    public TicketMapper(PeopleRepository peopleRepository, MovieShowTimeRepository movieShowTimeRepository, MovieRepository movieRepository, HallRepository hallRepository) {
+        this.peopleRepository = peopleRepository;
+        this.movieShowTimeRepository = movieShowTimeRepository;
+        this.movieRepository = movieRepository;
+        this.hallRepository = hallRepository;
+    }
 
 
-    public static TicketDTO castEntityToDTO(Ticket ticket) {
+    public TicketDTO castEntityToDTO(Ticket ticket) {
 
         //Set PeopleDTO
         People people = peopleRepository.findByEmail(ticket.getPeople().getUser().getEmail()).orElseThrow();
@@ -87,7 +95,7 @@ public class TicketUtils {
                 .movieShowTimeDTO(movieShowTimeDTO).build();
     }
 
-    public static List<TicketDTO> castListEntityToDTO(List<Ticket> tickets) {
+    public List<TicketDTO> castListEntityToDTO(List<Ticket> tickets) {
         List<TicketDTO> ticketDTOS = new ArrayList<>();
         for(Ticket ticket : tickets) {
             TicketDTO ticketDTO = castEntityToDTO(ticket);
@@ -96,7 +104,7 @@ public class TicketUtils {
         return ticketDTOS;
     }
 
-    public static Ticket castDTOToEntity(TicketDTO ticketDTO) {
+    public Ticket castDTOToEntity(TicketDTO ticketDTO) {
         Ticket ticket = new Ticket();
         String date = DateTimeUtils.fromDateToString(ticketDTO.getMovieShowTimeDTO().getDate());
         String movieName = ticketDTO.getMovieShowTimeDTO().getMovieDTO().getName();

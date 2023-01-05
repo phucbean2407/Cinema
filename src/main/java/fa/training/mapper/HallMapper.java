@@ -1,4 +1,4 @@
-package fa.training.service.utils;
+package fa.training.mapper;
 
 import fa.training.dto.HallDTO;
 import fa.training.entity.Hall;
@@ -6,14 +6,18 @@ import fa.training.repository.HallRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HallUtils {
+public class HallMapper {
+    private final HallRepository hallRepository;
 
-    static HallRepository hallRepository;
-    public static HallDTO castEntityToDTO(Hall hall) {
+    public HallMapper(HallRepository hallRepository) {
+        this.hallRepository = hallRepository;
+    }
+
+    public HallDTO castEntityToDTO(Hall hall) {
         return HallDTO.builder().name(hall.getName()).build();
     }
 
-    public static Hall castDTOToEntity(HallDTO hallDTO) {
+    public Hall castDTOToEntity(HallDTO hallDTO) {
         Hall hall = new Hall();
         if(hallRepository.findByName(hall.getName()).isPresent()){
             hall = hallRepository.findByName(hall.getName()).orElseThrow();

@@ -19,17 +19,17 @@ public class RoleController {
     }
 
     @PostMapping("/add_role")
-    public ResponseEntity<RoleDTO> addRole(@Valid @RequestBody RoleDTO roleDTO) {
-        return roleService.addRole(roleDTO);
+    public ResponseEntity<?> addRole(@Valid @RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.ok(roleService.addRole(roleDTO));
     }
     @PostMapping("/edit_role")
-    public ResponseEntity<RoleDTO> editRole(@Valid @RequestBody RoleDTO roleDTO) {
-        return roleService.editRole(roleDTO);
+    public ResponseEntity<?> editRole(@Valid @RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.ok(roleService.editRole(roleDTO));
     }
 
     @GetMapping("/get_role")
     public ResponseEntity<RoleDTO> getRole(@RequestParam("id") long roleId){
-        return roleService.findByID(roleId);
+        return ResponseEntity.ok(roleService.findByID(roleId));
     }
 
 }

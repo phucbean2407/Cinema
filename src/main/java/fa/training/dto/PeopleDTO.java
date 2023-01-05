@@ -1,18 +1,14 @@
 package fa.training.dto;
 
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.sql.Date;
+import java.util.Date;
 
-@Builder
-@Getter
-@Setter
+@Data
 public class PeopleDTO {
 
     @NotNull(message = "Empty Name")

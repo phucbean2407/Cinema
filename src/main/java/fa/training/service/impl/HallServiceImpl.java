@@ -2,55 +2,37 @@ package fa.training.service.impl;
 
 import fa.training.dto.HallDTO;
 import fa.training.entity.Hall;
+import fa.training.mapper.HallMapper;
 import fa.training.repository.HallRepository;
 import fa.training.service.HallService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HallServiceImpl implements HallService {
     private final HallRepository hallRepository;
 
-    public HallServiceImpl(HallRepository hallRepository) {
+    private final HallMapper hallMapper;
+
+    public HallServiceImpl(HallRepository hallRepository, HallMapper hallMapper) {
         this.hallRepository = hallRepository;
+        this.hallMapper = hallMapper;
     }
 
     @Override
-    public ResponseEntity<HallDTO> editTheaterHall(HallDTO hallDTO) {
+    public String editTheaterHall(HallDTO hallDTO) {
         try{
-            Hall hall = this.castDTOToEntity(hallDTO);
-            HallDTO hallDTO1 = this.castEntityToDTO(hall);
+            Hall hall = hallMapper.castDTOToEntity(hallDTO);
             hallRepository.saveAndFlush(hall);
-            return new ResponseEntity<>(hallDTO1, HttpStatus.OK);
+            return "Edit Hall complete";
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(),HttpStatus.OK);
+            return ex.getMessage();
         }
     }
     @Override
-    public ResponseEntity<HallDTO> findByName(String name) {
-        try{
-            Hall hall = hallRepository.findByName(name);
-            HallDTO hallDTO = this.castEntityToDTO(hall);
-            return new ResponseEntity<>(hallDTO, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity("Wrong name or this hall not exists.",HttpStatus.OK);
-        }
-
+    public HallDTO findByName(String name) {
+            Hall hall = hallRepository.findByName(name).orElseThrow();
+        return hallMapper.castEntityToDTO(hall);
     }
 
-    @Override
-    public HallDTO castEntityToDTO(Hall hall) {
-        HallDTO hallDTO = HallDTO.builder().name(hall.getName()).build();
-        return hallDTO;
-    }
-    @Override
-    public Hall castDTOToEntity(HallDTO hallDTO) {
-        Hall hall = new Hall();
-        if(hallRepository.findByName(hall.getName()) !=null){
-            hall = hallRepository.findByName(hall.getName());
-        }
-        hall.setName(hallDTO.getName());
-        return hall;
-    }
+
 }

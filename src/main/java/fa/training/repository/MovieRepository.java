@@ -7,10 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    Movie findByName(String name);
+    Optional<Movie> findByName(String name);
     List<Movie> findByCategory(Category category);
     @Query(value = "select m.* from cinema.movie m where m.rating >= 8.0", nativeQuery = true)
     List<Movie> findBestMovie();

@@ -2,7 +2,6 @@ package fa.training.controller;
 
 import fa.training.dto.RoleDTO;
 import fa.training.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,21 +12,24 @@ import javax.validation.Valid;
 @RequestMapping("/api")
 public class RoleController {
 
-    @Autowired
-    RoleService roleService;
+    private final RoleService roleService;
+
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @PostMapping("/add_role")
-    public ResponseEntity<RoleDTO> addRole(@Valid @RequestBody RoleDTO roleDTO) {
-        return roleService.addRole(roleDTO);
+    public ResponseEntity<?> addRole(@Valid @RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.ok(roleService.addRole(roleDTO));
     }
     @PostMapping("/edit_role")
-    public ResponseEntity<RoleDTO> editRole(@Valid @RequestBody RoleDTO roleDTO) {
-        return roleService.editRole(roleDTO);
+    public ResponseEntity<?> editRole(@Valid @RequestBody RoleDTO roleDTO) {
+        return ResponseEntity.ok(roleService.editRole(roleDTO));
     }
 
     @GetMapping("/get_role")
     public ResponseEntity<RoleDTO> getRole(@RequestParam("id") long roleId){
-        return roleService.findByID(roleId);
+        return ResponseEntity.ok(roleService.findByID(roleId));
     }
 
 }

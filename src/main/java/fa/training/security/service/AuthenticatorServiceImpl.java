@@ -1,26 +1,26 @@
 package fa.training.security.service;
 
+import fa.training.config.ModelMapperConfig;
 import fa.training.dto.PeopleDTO;
 import fa.training.dto.RoleDTO;
 import fa.training.dto.UserDTO;
-import fa.training.config.AppConfig;
+import fa.training.entity.People;
+import fa.training.entity.Role;
 import fa.training.entity.login.ERole;
 import fa.training.entity.login.LoginRequest;
 import fa.training.entity.login.SignupRequest;
 import fa.training.entity.login.User;
-import fa.training.entity.People;
-import fa.training.entity.Role;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.RoleRepository;
 import fa.training.repository.UserRepository;
 import fa.training.respone.JwtResponse;
 import fa.training.respone.MessageResponse;
 import fa.training.security.jwt.JwtUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,20 +31,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 @Service
 public class AuthenticatorServiceImpl  implements AuthenticatorService{
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    AppConfig appConfig;
-    @Autowired
-    PasswordEncoder encoder;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    PeopleRepository peopleRepository;
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    JwtUtils jwtUtils;
+    private final UserRepository userRepository;
+    private final ModelMapperConfig modelMapperConfig;
+    private final PasswordEncoder encoder;
+    private final RoleRepository roleRepository;
+    private final PeopleRepository peopleRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+
+    public AuthenticatorServiceImpl(UserRepository userRepository, ModelMapperConfig modelMapperConfig, PasswordEncoder encoder, RoleRepository roleRepository, PeopleRepository peopleRepository, AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
+        this.modelMapperConfig = modelMapperConfig;
+        this.encoder = encoder;
+        this.roleRepository = roleRepository;
+        this.peopleRepository = peopleRepository;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+    }
 
 
     @Override
@@ -58,7 +61,7 @@ public class AuthenticatorServiceImpl  implements AuthenticatorService{
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
@@ -118,27 +121,25 @@ public class AuthenticatorServiceImpl  implements AuthenticatorService{
         }
         user.setRoles(roles);
         userRepository.save(user);
-
-        User newUser = userRepository.findByUsername(signUpRequest.getPeopleDTO().getUserDTO().getUsername()).get();
+        User newUser = userRepository.findByUsername(signUpRequest.getPeopleDTO().getUserDTO().getUsername())
+                .orElseThrow(() -> new RuntimeException(""));
         UserDTO userDTO = new UserDTO();
         userDTO.setRoleDTOs(newUser.getRoles()
                 .stream()
-                .map(role -> appConfig.modelMapper().map(role, RoleDTO.class))
+                .map(role -> modelMapperConfig.modelMapper().map(role, RoleDTO.class))
                 .collect(Collectors.toSet()));
         userDTO.setUsername(newUser.getUsername());
         userDTO.setEmail(newUser.getEmail());
-        PeopleDTO peopleDTO = signUpRequest.getPeopleDTO();
-        peopleDTO.setUserDTO(userDTO);
+
         People person = new People();
-        if(peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()) !=null) {
-            person = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail());
-        }
-        person.setName(peopleDTO.getName());
-        person.setPhone(peopleDTO.getPhone());
-        person.setBirthday(peopleDTO.getBirthday());
-        person.setAddress(peopleDTO.getAddress());
+        person.setName(signUpRequest.getPeopleDTO().getName());
+        person.setPhone(signUpRequest.getPeopleDTO().getPhone());
+        person.setBirthday(signUpRequest.getPeopleDTO().getBirthday());
+        person.setAddress(signUpRequest.getPeopleDTO().getAddress());
         person.setUser(user);
         peopleRepository.save(person);
+        PeopleDTO peopleDTO = signUpRequest.getPeopleDTO();
+        peopleDTO.setUserDTO(userDTO);
         return ResponseEntity.ok((peopleDTO));
     }
 }

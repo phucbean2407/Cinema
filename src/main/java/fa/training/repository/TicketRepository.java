@@ -15,6 +15,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findTicketByEmail(String email);
 
 
-    @Query(value = "select t.* from cinema.ticket t ", nativeQuery = true)
+   // @Query(value = "select t.* from cinema.ticket t ", nativeQuery = true)
     List<Ticket> findAll();
+
 }

@@ -28,26 +28,18 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public String addMovie(MovieDTO movieDTO) {
         Movie movie = movieMapper.castDTOToEntity(movieDTO);
-        try {
             movieRepository.save(movie);
             return "Add Complete";
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
     }
 
 
     @Override
     public String addMovieFromList(List<MovieDTO> movieDTOS) {
-        try {
             for(MovieDTO movieDTO : movieDTOS){
                 Movie movie = movieMapper.castDTOToEntity(movieDTO);
                 movieRepository.save(movie);
             }
             return "Add List Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
 
     }
 
@@ -66,12 +58,9 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public String editMovie(MovieDTO movieDTO) {
         Movie movie = movieMapper.castDTOToEntity(movieDTO);
-        try {
             movieRepository.saveAndFlush(movie);
             return "Edit Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+
     }
 
     @Override

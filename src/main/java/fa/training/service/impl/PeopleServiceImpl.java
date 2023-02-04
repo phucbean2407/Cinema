@@ -24,13 +24,8 @@ public class PeopleServiceImpl implements PeopleService {
     @Override
     public String addPeople(PeopleDTO peopleDTO) {
         People people = peopleMapper.castDTOToEntity(peopleDTO);
-        try {
             peopleRepository.save(people);
             return "Add Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
-
     }
 
     @Override
@@ -47,12 +42,9 @@ public class PeopleServiceImpl implements PeopleService {
     @Override
     public String editPeople(PeopleDTO peopleDTO) {
         People people = peopleMapper.castDTOToEntity(peopleDTO);
-        try {
-            peopleRepository.saveAndFlush(people);
-            return "Edit Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        peopleRepository.saveAndFlush(people);
+        return "Edit Complete";
+
     }
 
     @Override

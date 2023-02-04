@@ -20,13 +20,9 @@ public class HallServiceImpl implements HallService {
 
     @Override
     public String editTheaterHall(HallDTO hallDTO) {
-        try{
             Hall hall = hallMapper.castDTOToEntity(hallDTO);
             hallRepository.saveAndFlush(hall);
             return "Edit Hall complete";
-        } catch (Exception ex) {
-            return ex.getMessage();
-        }
     }
     @Override
     public HallDTO findByName(String name) {

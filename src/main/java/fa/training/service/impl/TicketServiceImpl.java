@@ -27,17 +27,11 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public String addTicket(ChooseOrder chooseOrder) {
         Ticket ticket = ticketMapper.castDTOToEntity(chooseOrder.getTicketDTO());
-            try {
-                ticketRepository.save(ticket);
-                for(String a : chooseOrder.getNumberSeat()) {
-                    showTimeSeatRepository.setSeatOrder(ticket.getMovieShowTime().getId(),a);
-                }
-                return "Add Complete";
-            } catch (Exception e) {
-                return e.getMessage();
-            }
-
-
+        ticketRepository.save(ticket);
+        for(String a : chooseOrder.getNumberSeat()) {
+            showTimeSeatRepository.setSeatOrder(ticket.getMovieShowTime().getId(),a);
+        }
+        return "Add Complete";
     }
 
 

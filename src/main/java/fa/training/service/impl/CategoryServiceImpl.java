@@ -24,26 +24,17 @@ public class CategoryServiceImpl implements CategoryService {
     public String addCategory(CategoryDTO categoryDTO) {
         //Convert DTO to Entity
         Category category = categoryMapper.castDTOToEntity(categoryDTO);
-        try{
-            //verify
-            categoryRepository.save(category);
-            return "Add Complete";
-        } catch (Exception ex){
-            return ex.getMessage();
-        }
+        categoryRepository.save(category);
+        return "Add Complete";
     }
 
     @Override
     public String addCategoryList(List<CategoryDTO> categoryDTOs) {
-        try{
-            for(CategoryDTO categoryDTO: categoryDTOs){
-                Category category = categoryMapper.castDTOToEntity(categoryDTO);
-                categoryRepository.save(category);
-            }
-            return "Add List Complete";
-        } catch (Exception ex){
-            return ex.getMessage();
+        for (CategoryDTO categoryDTO : categoryDTOs) {
+            Category category = categoryMapper.castDTOToEntity(categoryDTO);
+            categoryRepository.save(category);
         }
+        return "Add List Complete";
     }
 
     @Override
@@ -65,12 +56,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public String editCategory(CategoryDTO categoryDTO) {
         Category category= categoryMapper.castDTOToEntity(categoryDTO);
-        try{
-            categoryRepository.saveAndFlush(category);
-            return "Edit Complete";
-        } catch (Exception ex){
-            return ex.getMessage();
-        }
+        categoryRepository.saveAndFlush(category);
+        return "Edit Complete";
     }
 
     @Override

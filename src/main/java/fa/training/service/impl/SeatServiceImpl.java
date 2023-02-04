@@ -28,12 +28,8 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public String editSeat(SeatDTO seatDTO, String username) {
         Seat seat = seatMapper.castDTOToEntity(seatDTO);
-        try{
-            seatRepository.saveAndFlush(seat);
-            return "Edit Complete";
-        } catch (Exception e){
-            return e.getMessage();
-        }
+        seatRepository.saveAndFlush(seat);
+        return "Edit Complete";
     }
 
 

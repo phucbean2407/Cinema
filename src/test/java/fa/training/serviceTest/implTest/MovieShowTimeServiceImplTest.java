@@ -5,6 +5,7 @@ import fa.training.dto.HallDTO;
 import fa.training.dto.MovieDTO;
 import fa.training.dto.MovieShowTimeDTO;
 import fa.training.entity.*;
+import fa.training.mapper.MovieShowTimeMapper;
 import fa.training.repository.HallRepository;
 import fa.training.repository.MovieRepository;
 import fa.training.repository.MovieShowTimeRepository;
@@ -13,6 +14,7 @@ import fa.training.service.impl.MovieServiceImpl;
 import fa.training.service.impl.MovieShowTimeServiceImpl;
 import fa.training.service.utils.DateTimeUtils;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -22,6 +24,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 class MovieShowTimeServiceImplTest {
@@ -30,6 +37,8 @@ class MovieShowTimeServiceImplTest {
     private MovieShowTimeServiceImpl movieShowTimeService;
     @Mock
     private MovieShowTimeRepository movieShowTimeRepository;
+    @Mock
+    private MovieShowTimeMapper movieShowTimeMapper;
     @Mock
     private HallRepository hallRepository;
     @Mock
@@ -55,7 +64,6 @@ class MovieShowTimeServiceImplTest {
     void setUp(){
         movieShowTimeDTOCast = new ArrayList<>();
 
-        movieShowTime  = new MovieShowTime();
 
         time = new Time();
         time.setId(1L);
@@ -74,6 +82,7 @@ class MovieShowTimeServiceImplTest {
         movie.setDescription("AABBCC");
         movie.setLengthMinute(180);
         date = DateTimeUtils.fromStringToDate("2022-12-15");
+        movieShowTime  = new MovieShowTime();
         movieShowTime.setDate(date);
         movieShowTime.setMovie(movie);
         movieShowTime.setHall(hall);
@@ -82,8 +91,6 @@ class MovieShowTimeServiceImplTest {
         movieShowTimes.add(movieShowTime);
 
         hallDTO = HallDTO.builder().name("A").build();
-
-        //categoryDTO = CategoryDTO.builder().name("Cartoon").build();
         CategoryDTO categoryDTO = CategoryDTO.builder()
                 .name("Cartoon").build();
         movieDTO = MovieDTO.builder()
@@ -103,65 +110,49 @@ class MovieShowTimeServiceImplTest {
         movieShowTimeDTOS.add(movieShowTimeDTO);
     }
 
-//    @Test
-//    void findAllAndFreeSeatsTest() {
-//
-//        //When
-//        when(movieRepository.findByName(movieShowTimeDTO.getMovieDTO().getName())).thenReturn(Optional.of(movie));
-//        when(movieService.castEntityToDTO(movie)).thenReturn(movieDTO);
-//        when(hallService.findByName(movieShowTimeDTO.getHallDTO().getName())).thenReturn(ResponseEntity.ok(hallDTO));
-//        when(movieShowTimeRepository.findAll()).thenReturn(movieShowTimes);
-//        //Then
-//        movieShowTimeDTOCast = movieShowTimeService.castListEntityToDTO(movieShowTimes);
-//        List<MovieShowTimeDTO> movieShowTimeDTOS2 = movieShowTimeService.findAllAndFreeSeats().getBody();
-//        assert movieShowTimeDTOS2 != null;
-//        assertEquals(movieShowTimeDTOCast.size(),movieShowTimeDTOS2.size());
-//        assertEquals(movieShowTimeDTOCast.get(0).getTime(), movieShowTimeDTOS2.get(0).getTime());
-//        assertEquals(movieShowTimeDTOCast.get(0).getMovieDTO(), movieShowTimeDTOS2.get(0).getMovieDTO());
-//        assertEquals(movieShowTimeDTOCast.get(0).getDate(), movieShowTimeDTOS2.get(0).getDate());
-//        assertEquals(movieShowTimeDTOCast.get(0).getHallDTO(), movieShowTimeDTOS2.get(0).getHallDTO());
-//    }
-//
-//    @Test
-//    void addMovieShowTimeTest() {
-//        //Given
-//        MovieShowTimeDTO movieShowTimeInsert = movieShowTimeDTO;
-//
-//        //When
-//        when(movieService.castEntityToDTO(movie)).thenReturn(movieDTO);
-//        when(hallService.findByName(movieShowTimeDTO.getHallDTO().getName())).thenReturn(ResponseEntity.ok(hallDTO));
-//        when(movieRepository.findByName(movieShowTimeDTO.getMovieDTO().getName())).thenReturn(Optional.of(movie));
-//        when(hallRepository.findByName(movieShowTimeDTO.getHallDTO().getName())).thenReturn(Optional.of(hall));
-//
-//        when(movieShowTimeRepository.save(any(MovieShowTime.class))).then((Answer<MovieShowTime>) invocation -> {
-//            MovieShowTime movieShowTime = invocation.getArgument(0);
-//            movieShowTime.setDate(date);
-//            movieShowTime.setMovie(movie);
-//            movieShowTime.setHall(hall);
-//            movieShowTime.setTime(time);
-//            return movieShowTime;
-//        });
-//        when(movieShowTimeRepository.findForTicket(DateTimeUtils.fromDateToString(movieShowTimeDTO.getDate())
-//                        ,movieShowTimeDTO.getMovieDTO().getName(), movieShowTimeDTO.getHallDTO().getName(),
-//                        movieShowTimeDTO.getTime().getId())).thenReturn(Optional.of(movieShowTime));
-//        //Then
-//        MovieShowTime showTimeCast  = movieShowTimeService.castDTOToEntity(movieShowTimeInsert);
-//
-//        MovieShowTimeDTO showTimeDTOCast = movieShowTimeService.castEntityToDTO(movieShowTime);
-//        showTimeDTOCast.setSeatDTOS(null);
-//        ResponseEntity<MovieShowTimeDTO> showTimes  = movieShowTimeService.addMovieShowTime(movieShowTimeInsert);
-//     //   verify(movieShowTimeRepository).save(movieShowTime);
-//        MovieShowTimeDTO mst = showTimes.getBody();
-//        assert mst != null;
-//        mst.setSeatDTOS(null);
-//        movieShowTime.setSeats(null);
-//        assertEquals(showTimeCast,movieShowTime);
-//        assertEquals(mst.getHallDTO(),showTimeDTOCast.getHallDTO());
-//        assertEquals(mst.getDate(),showTimeDTOCast.getDate());
-//        assertEquals(mst.getHallDTO(),showTimeDTOCast.getHallDTO());
-//        assertEquals(mst.getMovieDTO(),showTimeDTOCast.getMovieDTO());
-//
-//    }
+    @Test
+    void addMovieShowTimeTest(){
+        //Given
+        String actual = "Add Complete";
+        //When
+        when(movieShowTimeMapper.castDTOToEntity(movieShowTimeDTO)).thenReturn(movieShowTime);
+        when(movieShowTimeRepository.save(any(MovieShowTime.class))).thenReturn(movieShowTime);
+        //Then
+        String expected = movieShowTimeService.addMovieShowTime(movieShowTimeDTO);
+        verify(movieShowTimeRepository).save(movieShowTime);
+        assertEquals(actual,expected);
+    }
+
+    @Test
+    void findAllAndFreeSeatsTest() {
+        //Given
+        List<MovieShowTimeDTO> listMovieShowTimeActual = new ArrayList<>();
+        MovieShowTimeDTO movieShowTimeDTOFound = movieShowTimeDTO;
+        listMovieShowTimeActual.add(movieShowTimeDTOFound);
+
+        //When
+        when(movieShowTimeRepository.findAll()).thenReturn(movieShowTimes);
+        when(movieShowTimeMapper.castListEntityToDTO(movieShowTimes)).thenReturn(listMovieShowTimeActual);
+        //Then
+
+        List<MovieShowTimeDTO> listMovieShowTimeExpected = movieShowTimeService.findAllAndFreeSeats();
+        assertEquals(listMovieShowTimeActual, listMovieShowTimeExpected);
+    }
+
+    @Test
+    void findByDateAndFreeSeatsTest() {
+        //Given
+        List<MovieShowTimeDTO> listMovieShowTimeActual = new ArrayList<>();
+        MovieShowTimeDTO movieShowTimeDTOFound = movieShowTimeDTO;
+        listMovieShowTimeActual.add(movieShowTimeDTOFound);
+        //When
+        when(movieShowTimeRepository.findByDate(movieShowTime.getDate().toString())).thenReturn(movieShowTimes);
+        when(movieShowTimeMapper.castListEntityToDTO(movieShowTimes)).thenReturn(listMovieShowTimeActual);
+        //Then
+        List<MovieShowTimeDTO> listMovieShowTimeExpected = movieShowTimeService.findByDateAndFreeSeats(movieShowTime.getDate().toString());
+        assertEquals(listMovieShowTimeActual, listMovieShowTimeExpected);
+    }
+
 }
 
 

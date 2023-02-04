@@ -22,12 +22,9 @@ public class MovieShowTimeServiceImpl  implements MovieShowTimeService {
     @Override
     public String addMovieShowTime(MovieShowTimeDTO movieShowTimeDTO) {
         MovieShowTime movieShowTime = movieShowTimeMapper.castDTOToEntity(movieShowTimeDTO);
-        try{
             movieShowTimeRepository.save(movieShowTime);
             return "Add Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+
     }
 
 

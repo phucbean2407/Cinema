@@ -27,23 +27,16 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public String addRole(RoleDTO roleDTO) {
         Role role = roleMapper.castDTOToEntity(roleDTO);
-        try{
-            roleRepository.save(role);
-            return "Add Complete";
-        }catch (Exception e) {
-            return e.getMessage();
-        }
+        roleRepository.save(role);
+        return "Add Complete";
     }
 
     @Override
     public String editRole(RoleDTO roleDTO) {
         Role role = roleMapper.castDTOToEntity(roleDTO);
-        try {
-            roleRepository.saveAndFlush(role);
-            return "Edit Complete";
-        } catch (Exception e) {
-            return e.getMessage();
-        }
+        roleRepository.saveAndFlush(role);
+        return "Edit Complete";
+
     }
 
 

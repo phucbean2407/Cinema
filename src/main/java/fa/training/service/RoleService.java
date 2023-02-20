@@ -6,7 +6,9 @@ import fa.training.dto.RoleDTO;
 
 public interface RoleService {
 
-    RoleDTO findByID(long id);
+    RoleDTO findByAdmin();
+
+    RoleDTO findByUser();
 
     String addRole(RoleDTO roleDTO);
 

@@ -1,6 +1,4 @@
 package fa.training.service.impl;
-
-
 import fa.training.dto.SeatDTO;
 import fa.training.entity.Seat;
 import fa.training.mapper.SeatMapper;
@@ -17,20 +15,15 @@ public class SeatServiceImpl implements SeatService {
         this.seatRepository = seatRepository;
         this.seatMapper = seatMapper;
     }
-
     @Override
     public List<SeatDTO> getAll() {
         List<Seat> seats = seatRepository.findAll();
         return seatMapper.castListEntityToDTO(seats);
-
     }
-
     @Override
-    public String editSeat(SeatDTO seatDTO, String username) {
+    public String editSeat(SeatDTO seatDTO) {
         Seat seat = seatMapper.castDTOToEntity(seatDTO);
         seatRepository.saveAndFlush(seat);
         return "Edit Complete";
     }
-
-
 }

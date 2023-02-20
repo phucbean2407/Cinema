@@ -4,7 +4,7 @@ import fa.training.dto.PeopleDTO;
 import fa.training.dto.RoleDTO;
 import fa.training.dto.UserDTO;
 import fa.training.entity.People;
-import fa.training.entity.login.User;
+import fa.training.entity.User;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.UserRepository;
 import org.springframework.stereotype.Component;

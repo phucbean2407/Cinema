@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/tickets")
 public class TicketController {
     private final TicketService ticketService;
 
@@ -24,7 +24,7 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.addTicket(chooseOrder));
     }
 
-    @GetMapping("/tickets")
+    @GetMapping("")
     public ResponseEntity<List<TicketDTO>>  getAll(){
         return ResponseEntity.ok(ticketService.findAll());
     }

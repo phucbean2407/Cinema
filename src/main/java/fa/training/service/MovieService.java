@@ -2,6 +2,7 @@ package fa.training.service;
 
 
 import fa.training.dto.MovieDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ public interface MovieService {
 
     String addMovie(MovieDTO movieDTO);
 
-    String addMovieFromList(List<MovieDTO> movieDTOS);
+    String addMovieFromExcel(MultipartFile file) throws Exception;
 
     Boolean deleteMovieByName(String name);
 

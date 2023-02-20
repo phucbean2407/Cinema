@@ -2,7 +2,8 @@ package fa.training.mapper;
 
 import fa.training.dto.*;
 import fa.training.entity.*;
-import fa.training.entity.login.User;
+import fa.training.entity.User;
+import fa.training.enumerates.Time;
 import fa.training.repository.HallRepository;
 import fa.training.repository.MovieRepository;
 import fa.training.repository.MovieShowTimeRepository;
@@ -65,7 +66,7 @@ public class TicketMapper {
                 .description(movie.getDescription())
                 .rating(movie.getRating())
                 .lengthMinute(movie.getLengthMinute())
-                .categoryDTO(categoryDTO).build();
+                .categoryDTO(categoryDTO.getName()).build();
 
         Hall hall = movieShowTime.getHall();
         HallDTO hallDTO = HallDTO.builder()
@@ -109,13 +110,12 @@ public class TicketMapper {
         String date = DateTimeUtils.fromDateToString(ticketDTO.getMovieShowTimeDTO().getDate());
         String movieName = ticketDTO.getMovieShowTimeDTO().getMovieDTO().getName();
         String hallName =  ticketDTO.getMovieShowTimeDTO().getHallDTO().getName();
-        long timeId = ticketDTO.getMovieShowTimeDTO().getTime().getId();
         Time time = ticketDTO.getMovieShowTimeDTO().getTime();
         MovieShowTime movieShowTime = movieShowTimeRepository
                 .findForTicket(date,
                         movieName,
                         hallName,
-                        timeId).orElseThrow(() -> new NoSuchElementException("NOT FOUND"));
+                        time).orElseThrow(() -> new NoSuchElementException("NOT FOUND"));
         movieShowTime.setTime(time);
         movieShowTime.setDate(ticketDTO.getMovieShowTimeDTO().getDate());
         Movie movie = movieRepository.findByName(movieName).orElseThrow();

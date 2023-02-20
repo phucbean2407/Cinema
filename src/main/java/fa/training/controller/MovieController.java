@@ -5,6 +5,7 @@ import fa.training.dto.MovieDTO;
 import fa.training.service.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/movies")
 public class MovieController {
 
     private final MovieService movieService;
@@ -26,11 +27,10 @@ public class MovieController {
         return ResponseEntity.ok(movieService.addMovie(movieDTO));
     }
 
-    @PostMapping("/add_movie_list")
-    public ResponseEntity<?> addMovieFromList(@RequestBody List<MovieDTO> movieDTOS)throws NullPointerException{
-        return ResponseEntity.ok(movieService.addMovieFromList(movieDTOS));
+    @PostMapping("/from-list")
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok(movieService.addMovieFromExcel(file));
     }
-
 
 
     @DeleteMapping("/del_movie")
@@ -55,7 +55,7 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findByCategory(categoryName));
     }
 
-    @GetMapping("/movies")
+    @GetMapping("")
     public ResponseEntity<List<MovieDTO>> getAllMovies(){
         return ResponseEntity.ok(movieService.findAllFMovies());
     }

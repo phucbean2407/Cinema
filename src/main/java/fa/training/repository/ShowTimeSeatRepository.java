@@ -13,7 +13,8 @@ public class ShowTimeSeatRepository {
 
     @Transactional
     public void setSeatOrder(long movieShowTimeId, String seatName) {
-        entityManager.createNativeQuery("insert into cinema.show_time_seat(movie_show_time_id, seat_id) " +
+        entityManager.createNativeQuery(
+                "insert into cinema.show_time_seat(movie_show_time_id, seat_id) " +
                         "select mst.id,s.id " +
                         "from cinema.movie_show_time mst,cinema.seat s " +
                         "where mst.id = ? and s.name = ? ")

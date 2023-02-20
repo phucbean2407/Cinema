@@ -1,6 +1,6 @@
 package fa.training.exception;
 
-import fa.training.respone.DataResponse;
+import fa.training.model.respone.DataResponse;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

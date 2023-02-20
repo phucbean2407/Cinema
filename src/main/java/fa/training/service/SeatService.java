@@ -8,7 +8,5 @@ import java.util.List;
 public interface SeatService {
     //Seat không thêm, không xóa.
     List<SeatDTO> getAll();
-    String editSeat(SeatDTO seat, String userName);
-
-
+    String editSeat(SeatDTO seatDTO);
 }

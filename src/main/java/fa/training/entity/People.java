@@ -1,7 +1,6 @@
 package fa.training.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import fa.training.entity.login.User;
 import lombok.Data;
 
 import javax.persistence.*;

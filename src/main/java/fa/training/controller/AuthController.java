@@ -1,9 +1,9 @@
 package fa.training.controller;
 
 
-import fa.training.entity.login.LoginRequest;
-import fa.training.entity.login.SignupRequest;
-import fa.training.security.service.AuthenticatorService;
+import fa.training.model.request.LoginRequest;
+import fa.training.model.request.SignupRequest;
+import fa.training.service.AuthenticatorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package fa.training.entity;
 
-import fa.training.entity.login.ERole;
+import fa.training.enumerates.ERole;
 import lombok.Data;
 
 import javax.persistence.*;

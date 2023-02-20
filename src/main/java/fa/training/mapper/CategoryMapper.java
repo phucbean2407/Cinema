@@ -9,14 +9,11 @@ import java.util.List;
 
 @Component
 public class CategoryMapper {
-
-
     public CategoryDTO castEntityToDTO(Category category) {
         return  CategoryDTO.builder()
                 .name(category.getName())
                 .build();
     }
-
     public List<CategoryDTO> castListEntityToDTO(List<Category> categories) {
         List<CategoryDTO> categoryDTOS = new ArrayList<>();
         for(Category category : categories){

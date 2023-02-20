@@ -28,9 +28,10 @@ public class TicketServiceImpl implements TicketService {
     public String addTicket(ChooseOrder chooseOrder) {
         Ticket ticket = ticketMapper.castDTOToEntity(chooseOrder.getTicketDTO());
         ticketRepository.save(ticket);
-        for(String a : chooseOrder.getNumberSeat()) {
-            showTimeSeatRepository.setSeatOrder(ticket.getMovieShowTime().getId(),a);
-        }
+        for(String numberSeat : chooseOrder.getNumberSeat()) {
+            long movieShowTimeId = ticket.getMovieShowTime().getId();
+            showTimeSeatRepository.setSeatOrder(movieShowTimeId, numberSeat);
+        }//Repository existById
         return "Add Complete";
     }
 

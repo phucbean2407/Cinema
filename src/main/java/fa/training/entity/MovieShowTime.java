@@ -2,6 +2,7 @@ package fa.training.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import fa.training.enumerates.Time;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(uniqueConstraints = @UniqueConstraint(name = "CheckInit", columnNames = { "date","movie_id","hall_id","time_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "CheckInit", columnNames = { "date","movie_id","hall_id","time"}))
 public class MovieShowTime implements Serializable  {
 
     @Id
@@ -35,9 +36,7 @@ public class MovieShowTime implements Serializable  {
             joinColumns = @JoinColumn(name = "movie_show_time_id"),
             inverseJoinColumns = @JoinColumn(name = "seat_id"))
     private Set<Seat> seats = new HashSet<>();
-
-    @ManyToOne
-    @JoinColumn(name = "time_id")
+    @Enumerated(EnumType.ORDINAL)
     private Time time;
     @ManyToOne
     @JoinColumn(name = "hall_id")

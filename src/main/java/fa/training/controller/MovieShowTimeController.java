@@ -11,7 +11,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/movieshowtimes")
 public class MovieShowTimeController {
     private final MovieShowTimeService movieShowTimeService;
 
@@ -31,7 +31,7 @@ public class MovieShowTimeController {
     public ResponseEntity<List<MovieShowTimeDTO>> findByDateAndFreeSeats(@RequestParam("date")String date){
         return ResponseEntity.ok(movieShowTimeService.findByDateAndFreeSeats(date));
     }
-    @GetMapping("/movie_show_times")
+    @GetMapping("")
     public ResponseEntity<List<MovieShowTimeDTO>> getAllFindAllAndFreeSeats(){
         return ResponseEntity.ok(movieShowTimeService.findAllAndFreeSeats());
     }

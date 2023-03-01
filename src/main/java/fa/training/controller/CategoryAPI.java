@@ -3,6 +3,7 @@ package fa.training.controller;
 import fa.training.dto.CategoryDTO;
 import fa.training.service.CategoryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -47,6 +48,7 @@ public class CategoryAPI {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<CategoryDTO>> getAllCategory(){
         return ResponseEntity.ok(categoryService.findAll());
     }

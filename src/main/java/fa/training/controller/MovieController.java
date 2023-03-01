@@ -4,6 +4,7 @@ package fa.training.controller;
 import fa.training.dto.MovieDTO;
 import fa.training.service.MovieService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ public class MovieController {
     }
 
     @PostMapping("/add_movie")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> addMovie(@Valid @RequestBody MovieDTO movieDTO) {
         return ResponseEntity.ok(movieService.addMovie(movieDTO));
     }
@@ -34,6 +36,7 @@ public class MovieController {
 
 
     @DeleteMapping("/del_movie")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteMovie(@RequestParam("name") String name)throws NullPointerException{
         if(Boolean.TRUE.equals(movieService.deleteMovieByName(name))){
             return ResponseEntity.ok("Complete!");

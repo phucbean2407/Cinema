@@ -91,7 +91,7 @@ class MovieShowTimeServiceImplTest {
                 .name("Doraemon")
                 .description("AABBCC")
                 .lengthMinute(180)
-                .categoryDTO(categoryDTO)
+                .categoryDTO(categoryDTO.getName())
                 .rating(8.9)
                 .build();
 

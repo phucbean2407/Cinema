@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,16 +28,14 @@ public class UploadServiceImpl implements UploadService {
     public UploadServiceImpl(UploadUtils uploadUtils) {
         this.uploadUtils = uploadUtils;
     }
-
     @Override
     public List<Map<String, String>> upload(MultipartFile file) throws Exception {
         Path tempDir = Files.createTempDirectory("");
-        File tempFile = tempDir.resolve(file.getOriginalFilename()).toFile();
+        File tempFile = tempDir.resolve(Objects.requireNonNull(file.getOriginalFilename())).toFile();
         file.transferTo(tempFile);
         Workbook workbook = WorkbookFactory.create(tempFile);
         Sheet sheet = workbook.getSheetAt(0);
         Supplier<Stream<Row>> rowStreamSupplier = uploadUtils.getRowStreamSupplier(sheet);
-
         Row headerRow = rowStreamSupplier.get().findFirst().get();
         List<String> headerCells = StreamSupport.stream(headerRow.spliterator(), false)
                 .map(Cell::getStringCellValue)

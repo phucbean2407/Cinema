@@ -1,4 +1,4 @@
-package fa.training.retention;
+package fa.training.entity.retention;
 
 
 import java.lang.annotation.Retention;

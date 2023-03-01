@@ -10,18 +10,17 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-public class UploadController {
+public class ImportController {
 
     private final UploadService uploadService;
 
-    public UploadController(UploadService uploadService) {
+    public ImportController(UploadService uploadService) {
         this.uploadService = uploadService;
     }
 
     @PostMapping("/api/movies/upload")
     public List<Map<String,String>> upload(@RequestParam("file") MultipartFile file) throws Exception {
         List<Map<String, String>> temp = uploadService.upload(file);
-        temp.remove(0);
         return temp;
     }
 }

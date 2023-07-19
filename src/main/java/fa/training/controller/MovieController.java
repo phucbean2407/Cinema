@@ -2,7 +2,11 @@ package fa.training.controller;
 
 
 import fa.training.dto.MovieDTO;
+import fa.training.dto.ResourceDTO;
+import fa.training.service.ExcelService;
 import fa.training.service.MovieService;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +20,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
-
+    private final ExcelService excelService;
     private final MovieService movieService;
 
-    public MovieController(MovieService movieService) {
+    public MovieController(MovieService movieService, ExcelService excelService) {
         this.movieService = movieService;
+        this.excelService = excelService;
     }
 
     @PostMapping("/add_movie")
@@ -63,4 +68,17 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findAllFMovies());
     }
 
+    @GetMapping("/export-movie")
+    public ResponseEntity<Resource> exportUsers(){
+        ResourceDTO resourceDTO= excelService.exportMovies();
+
+        HttpHeaders httpHeaders=new HttpHeaders();
+        httpHeaders.add("Content-Disposition",
+                "attachment; filename="+"Movies.xlsx");
+
+        return ResponseEntity.ok()
+                .contentType(resourceDTO.getMediaType())
+                .headers(httpHeaders)
+                .body(resourceDTO.getResource());
+    }
 }

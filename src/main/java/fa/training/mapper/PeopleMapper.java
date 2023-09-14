@@ -5,6 +5,7 @@ import fa.training.dto.RoleDTO;
 import fa.training.dto.UserDTO;
 import fa.training.entity.People;
 import fa.training.entity.User;
+import fa.training.exception.PersonNotFoundException;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.UserRepository;
 import org.springframework.stereotype.Component;
@@ -57,12 +58,15 @@ public class PeopleMapper {
     public People castDTOToEntity(PeopleDTO peopleDTO) {
         People person = new People();
         if(peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()).isPresent()) {
-            person = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()).orElseThrow();
+            person = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()) .orElseThrow( () -> new PersonNotFoundException(peopleDTO.getName() +
+                    ", Email: " + peopleDTO.getUserDTO().getEmail()));
         }
         person.setName(peopleDTO.getName());
         person.setPhone(peopleDTO.getPhone());
         person.setAddress(peopleDTO.getAddress());
-        User user = userRepository.findByUsername(peopleDTO.getUserDTO().getUsername()).orElseThrow();
+        User user = userRepository.findByUsername(peopleDTO.getUserDTO().getUsername())
+                .orElseThrow( () -> new PersonNotFoundException(peopleDTO.getUserDTO().getUsername() +
+                ", Email: " + peopleDTO.getUserDTO().getEmail()));
         person.setUser(user);
         return person;
     }

@@ -73,7 +73,8 @@ public class MovieMapper {
             movie.setDescription(movieTransfer.getDescription());
             movie.setName(movieTransfer.getName());
             movie.setLengthMinute((int)Double.parseDouble(movieTransfer.getLengthMinute()));
-            movie.setCategory(categoryRepository.findByName(movieTransfer.getCategoryDTO()).orElseThrow());
+            movie.setCategory(categoryRepository.findByName(movieTransfer.getCategoryDTO())
+                    .orElseThrow(() -> new NoSuchElementException("Not found Category.")));
             movies.add(movie);
         }
         return movies;

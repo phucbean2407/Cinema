@@ -1,11 +1,14 @@
 package fa.training.repository;
 
+import fa.training.entity.Hall;
+import fa.training.entity.Movie;
 import fa.training.entity.MovieShowTime;
 import fa.training.enumerates.Time;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,4 +23,6 @@ public interface MovieShowTimeRepository extends JpaRepository<MovieShowTime, Lo
     Optional<MovieShowTime> findForTicket(String date, String movieName, String hallName, Time time);
     @Query(value = "select mst.* from movie_show_time mst where  mst.date = :date", nativeQuery = true)
     List<MovieShowTime> findByDate(String date);
+
+    Optional<MovieShowTime> findByDateAndMovieAndHallAndTime(Date date, Movie movie, Hall hall, Time time);
 }

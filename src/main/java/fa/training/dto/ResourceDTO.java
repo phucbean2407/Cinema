@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 @Getter
 public class ResourceDTO {
     private Resource resource;
-
     private MediaType mediaType;
 
 

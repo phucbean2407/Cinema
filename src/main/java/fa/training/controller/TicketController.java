@@ -3,6 +3,7 @@ package fa.training.controller;
 
 import fa.training.dto.ChooseOrder;
 import fa.training.dto.TicketDTO;
+import fa.training.exception.SeatExistsException;
 import fa.training.service.TicketService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class TicketController {
     }
 
     @PostMapping("/add_ticket")
-    public ResponseEntity<?> addTicket(@RequestBody @Valid ChooseOrder chooseOrder) {
+    public ResponseEntity<?> addTicket(@RequestBody @Valid ChooseOrder chooseOrder) throws SeatExistsException {
         return ResponseEntity.ok(ticketService.addTicket(chooseOrder));
     }
 

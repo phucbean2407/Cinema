@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,8 +58,9 @@ public class MovieShowTimeMapper {
         MovieShowTime movieShowTime = new MovieShowTime();
         movieShowTime.setDate(movieShowTimeDTO.getDate());
         movieShowTime.setTime(movieShowTimeDTO.getTime());
-        movieShowTime.setMovie(movieRepository.findByName(movieShowTimeDTO.getMovieDTO().getName()).orElseThrow());
-        movieShowTime.setHall(hallRepository.findByName(movieShowTimeDTO.getHallDTO().getName()).orElseThrow());
+        movieShowTime.setMovie(movieRepository.findByName(movieShowTimeDTO.getMovieDTO().getName())
+                .orElseThrow(() -> new NoSuchElementException("Not found movie " + movieShowTimeDTO.getMovieDTO().getName())));
+        movieShowTime.setHall(hallRepository.findByName(movieShowTimeDTO.getHallDTO().getName()).orElseThrow(() -> new NoSuchElementException("Not found hall.")));
         return movieShowTime;
     }
 }

@@ -2,8 +2,9 @@ package fa.training.mapper;
 
 import fa.training.dto.*;
 import fa.training.entity.*;
-import fa.training.entity.User;
 import fa.training.enumerates.Time;
+import fa.training.exception.MovieShowTimeNotFoundException;
+import fa.training.exception.PersonNotFoundException;
 import fa.training.repository.HallRepository;
 import fa.training.repository.MovieRepository;
 import fa.training.repository.MovieShowTimeRepository;
@@ -11,10 +12,7 @@ import fa.training.repository.PeopleRepository;
 import fa.training.service.utils.DateTimeUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 @Component
 public class TicketMapper {
@@ -107,20 +105,21 @@ public class TicketMapper {
 
     public Ticket castDTOToEntity(TicketDTO ticketDTO) {
         Ticket ticket = new Ticket();
-        String date = DateTimeUtils.fromDateToString(ticketDTO.getMovieShowTimeDTO().getDate());
+        String date1 = DateTimeUtils.fromDateToString(ticketDTO.getMovieShowTimeDTO().getDate());
+        Date date = DateTimeUtils.fromStringToDate(date1);
         String movieName = ticketDTO.getMovieShowTimeDTO().getMovieDTO().getName();
+        Movie movie = movieRepository.findByName(movieName).orElseThrow(() -> new NoSuchElementException("NOT FOUND MOVIE"));
         String hallName =  ticketDTO.getMovieShowTimeDTO().getHallDTO().getName();
+        Hall hall = hallRepository.findByName(hallName).orElseThrow(() -> new NoSuchElementException("NOT FOUND HALL"));
         Time time = ticketDTO.getMovieShowTimeDTO().getTime();
         MovieShowTime movieShowTime = movieShowTimeRepository
-                .findForTicket(date,
-                        movieName,
-                        hallName,
-                        time).orElseThrow(() -> new NoSuchElementException("NOT FOUND"));
+                .findByDateAndMovieAndHallAndTime(date,movie,hall,time)
+                .orElseThrow(() -> new
+                        MovieShowTimeNotFoundException("Date: " + date1 +
+                        ", Movie: " + movieName + ", Hall: " + hallName + ", Time: " + time.name()));
         movieShowTime.setTime(time);
         movieShowTime.setDate(ticketDTO.getMovieShowTimeDTO().getDate());
-        Movie movie = movieRepository.findByName(movieName).orElseThrow();
         movieShowTime.setMovie(movie);
-        Hall hall = hallRepository.findByName(hallName).orElseThrow();
         movieShowTime.setHall(hall);
         ticket.setMovieShowTime(movieShowTime);
         ticket.setPaymentMethod(ticketDTO.getPaymentMethod());
@@ -128,7 +127,9 @@ public class TicketMapper {
         ticket.setQuantity(ticketDTO.getQuantity());
         ticket.setTotalMoney(ticketDTO.getPrice()*ticketDTO.getQuantity());
         PeopleDTO peopleDTO = ticketDTO.getPeopleDTO();
-        People people = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail()).orElseThrow();
+        People people = peopleRepository.findByEmail(peopleDTO.getUserDTO().getEmail())
+                .orElseThrow( () -> new PersonNotFoundException(peopleDTO.getName() +
+                        ", Email: " + peopleDTO.getUserDTO().getEmail()));
         people.setBirthday(peopleDTO.getBirthday());
         people.setName(peopleDTO.getName());
         people.setAddress(peopleDTO.getAddress());

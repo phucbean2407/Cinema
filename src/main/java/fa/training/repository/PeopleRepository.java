@@ -23,13 +23,11 @@ public interface PeopleRepository extends JpaRepository<People, Long> {
             "where r.name= :roleName", nativeQuery = true)
     List<People> findByRole(String roleName);
     @Query(value = "select p.* " +
-            "from cinema.people p INNER JOIN cinema.users s " +
-            "on p.user_id = s.id INNER JOIN cinema.user_roles ur " +
-            "on s.id = ur.user_id INNER JOIN cinema.role r " +
+            "from cinema.users s INNER JOIN cinema.people p  " +
+            "on  s.id= p.user_id  INNER JOIN cinema.user_roles ur  " +
+            "on p.id = ur.user_id INNER JOIN cinema.role r " +
             "on ur.role_id = r.id "+
             "where r.name= :roleName and p.birthday = :birthday " , nativeQuery = true)
     List<People> findByRoleAndBirthday(String roleName, String birthday);
-
-
 
 }

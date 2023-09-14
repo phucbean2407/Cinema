@@ -4,6 +4,7 @@ import fa.training.dto.*;
 import fa.training.entity.*;
 import fa.training.entity.User;
 import fa.training.enumerates.Time;
+import fa.training.exception.SeatExistsException;
 import fa.training.mapper.TicketMapper;
 import fa.training.repository.PeopleRepository;
 import fa.training.repository.ShowTimeSeatRepository;
@@ -167,7 +168,7 @@ class TicketServiceImplTest {
     }
 
     @Test
-    void addTicketTest() {
+    void addTicketTest() throws SeatExistsException {
         //Given
         String actual = "Add Complete";
         //ShowTimeSeatRepository showTimeSeat = mock(ShowTimeSeatRepository.class);
